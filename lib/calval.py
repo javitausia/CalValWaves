@@ -106,7 +106,6 @@ class CalVal(object):
             message = 'Not a valid value for calibration_type'
             return message
         
-        print(calibration)
         print(' \n ')
         
         # Construct matrices to calibrate
