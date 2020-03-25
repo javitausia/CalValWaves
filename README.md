@@ -2,20 +2,22 @@
 
 ### Calibration and validation of hindcast information
 
-CalValWaves is a open-source software toolkit written in python that enables the users to calibrate and validate hindcast data. This hindcast significant height data can be calibrated using both buoy and satellite significant height of waves as the "good" measure, but the way we prefer to do it is calibrating first with he satellite data and validating the with the buoy. A description of what has been done can be seen in this paper:
+CalValWaves is a open-source software toolkit written in python that enables the users to calibrate and validate hindcast data. This hindcast significant wave height data can be calibrated using both buoy and satellite significant height of waves as the "good" measure, but the way we prefer to do it is calibrating first with the satellite data and validating with the buoy after the calibration. A description of what has been done can be seen in this paper:
 
 * João Albuquerque, Jose A. A. Antolínez, Ana Rueda, Fernando J.Méndez, Giovanni Cocoa (November 2018). Directional correction of modeled sea and swell wave heights using satellite altimeter data. https://doi.org/10.1016/j.ocemod.2018.09.001
 
 ## 1. Description
 
-Hindcast models are very useful as they have information of different variables for a very long and constant period of time. In this case, this data will be used after been calibrated to propagate waves from the point where the node of the hindcast is to shallow waters, and it is very important to have constant data along a very large period of time, so the propagations can be representative. The problem now is that these hindcasts are sometimes wrong, and this is why we must calibrate them first with satellite data and validate them after all with a nerby buoy to see if data correlate.
+Hindcast models are very useful as they have information of different variables for a very long and constant period of time. In this case, this data will be used after been calibrated to propagate waves from the point where the node of the hindcast is to shallow waters, and it is very important to have constant data along a very large period of time, so the propagations can be representative. The problem now is that these hindcasts are sometimes a little incorrect, and this is why we must calibrate them first with satellite data and validate them after all with a nerby buoy to see if data correlate.
 
 Example data is proportioned to the user to see how the toolbox works but in case the process needs to be donde in another location along the world, then this data will have to be acquired and preprocessed for that new place. There is not a unique way to obtain the data, but here is how we have donde it.
 
 - Buoy: This is the most relative part, as it depends of the country you are working on, for Spain, as it is our area of study, data can be requested using the goverment resources.
-- Hincast: Different hindcasts are open to users. In this work, we have used both CSIRO and ERA5, but we have finally decided CSIRO is most suitable for the purpose of the global project. Both hidcasts can be requested online.
+- Hincast: Different hindcasts are open to users. In this work, we have used both CSIRO and ERA5, but we have finally decided CSIRO is the most suitable for the purpose of the global project. Both hidcasts can be requested online.
 - Satellite: IMOS satellite data has been used and it can be downloaded for the IMOS website.
-- Bathymetry: The GEBCO bathymetry is constant along the world and it can be downloaded as a netCDF file along thw world. HOwever, depending on the purpose of the project, more precise data should be requested. Here we use more precise bathymetry data in Spain.
+- Bathymetry: The GEBCO bathymetry is constant along the world and it can be downloaded as a netCDF from its website. However, depending on the purpose of the project, more precise data should be requested. Here we use more precise bathymetry data in Spain.
+
+### More detailed information will be updated regarding the acquisition of the data.
 
 ## 2. Main contents
 
@@ -25,7 +27,12 @@ Example data is proportioned to the user to see how the toolbox works but in cas
 
 [test](./tests/): Test examples
 - [python example](./tests/example_01.py): Example of how to use the library
-- [notebook example](./test/example_01.ipynb): Jupyter notebook explanation.
+
+[images](./images/): Images examples
+- All the images present in this folder can be obtained using the python example. It is not necessary to explain what each image contains as they are self-explicative.
+
+[data](./data/): Data used
+- All the data present in this folder is enough to run the python files and the jupyter notebook as a first example.
 
 ## 3. Installation
 
