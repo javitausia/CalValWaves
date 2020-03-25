@@ -32,7 +32,7 @@ Example data is proportioned to the user to see how the toolbox works but in cas
 - All the images present in this folder can be obtained using the python example. It is not necessary to explain what each image contains as they are self-explicative.
 
 [data](./data/): Data used
-- All the data present in this folder is enough to run the python files and the jupyter notebook as a first example.
+- All the data present in this folder is enough to run the python files and the jupyter notebook as a first example. If the toolbox wanna be used to calibrate and validate different data, it is compulsary to have a look in how the initial data has been preprocessed. For the hindcast and the buoy data, pandas dataframes are used, for the satellite, a netCDF file (as it is downloaded from the IMOS website), for the global GEBCO bathymetry, also a netCDF file and for the precise spanish bathymetry, a .dat file.
 
 ## 3. Installation
 
@@ -47,6 +47,7 @@ Create a new environment named `calval` with all the required packages:
 ```
 conda env create -f environment.yml -n calval
 ```
+### 3.2 Activate conda environment
 
 All the required packages have been now installed in an environment called `calval`. Now, activate this new environment:
 
@@ -54,9 +55,9 @@ All the required packages have been now installed in an environment called `calv
 conda activate calval
 ```
 
-### 3.2 Play
+## 4. Play
 
-Now everything has been installed, you can now start to play with the python code and the jupyter notebook explanation.
+Now everything has been installed, you can now start to play with the python code and the jupyter notebook explanation. Be careful, as some important parameters can be adjusted during the calibration process (construction of the object of the class, first line code in the jupyter notebook). Nevertheless, parameters used are also shown in the example.
 
 ## Additional support:
 
