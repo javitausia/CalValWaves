@@ -178,15 +178,13 @@ class CalVal(object):
         Hs_ncorr = np.sqrt(np.sum(Hs_ncorr_mat, axis=1))
         Hs_corr_mat = paramss * Hs_ncorr_mat
         Hs_corr = np.sqrt(np.sum(Hs_corr_mat, axis=1))
-        calibration_return = self.hindcast.copy()
-        calibration_return.iloc[self.possible_to_correct]\
-                               ['Hs_'+self.hind+'_cal'] = Hs_corr
-        calibration_return.iloc[self.possible_to_correct]\
-                               ['Hs_'+self.hind] = Hs_corr
-        print(' \n   \n ')
+        cal_r = self.hindcast.copy()
+        cal_r.iloc[self.possible_to_correct]['Hs_'+self.hind] = Hs_corr
+        cal_r.iloc[self.possible_to_correct]['Hs_'+self.hind+'_cal'] = Hs_corr
+        print(' \n  \n ')
         
         # return
-        return calibration_return, params
+        return cal_r, params
     
     
     def satellite_values(self, ini_lat, end_lat, ini_lon, end_lon):
@@ -368,10 +366,11 @@ class CalVal(object):
                     else:
                         color_vals = coefs[16:32]
                         title = 'Swell'
-                    if np.max(abs(coefs))>1.5:
-                        norm = 1
-                    else:
-                        norm = np.max(coefs)-1
+                    #if np.max(abs(coefs))>1.5:
+                    #    norm = 1
+                    #else:
+                    #    norm = np.max(coefs)-1
+                    norm = 0.3
                     fracs = np.repeat(10, 16)
                     my_norm = mpl.colors.Normalize(1-norm, 1+norm)
                     my_cmap = mpl.cm.get_cmap('bwr', len(color_vals))
@@ -420,10 +419,10 @@ class CalVal(object):
         # Perform the comparison
         n = int(input('Number of years: '))
         years = list(map(int, input('Years separated by one space: ')\
-                         .strip().split()))[:n]        
+                         .strip().split()))[:n]
+        
         print(' \n ')
         print('Comparing data... \n ')
-        years = [2006, 2007]
         
         for year in years:
             year_plot = comparison.copy()
