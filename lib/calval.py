@@ -59,13 +59,15 @@ class CalVal(object):
         print('Initializing data to calibrate... \n ')
         
         self.buoy                 =    buoy
-        self.hindcast             =    hindcast
+        self.hindcast             =    hindcast.copy()
         self.possible_to_correct  =    np.where(hindcast['Hs_'+hind+'_cal'] > 0.01)[0]        
         self.hind_to_corr         =    hindcast.iloc[self.possible_to_correct]
         self.sat                  =    sat
         self.hind                 =    hind
-        self.hindcast_sat_corr, self.params_sat_corr    =    self.calibration('sat')
-        self.hindcast_buoy_corr, self.params_buoy_corr  =    self.calibration('buoy')
+        self.hindcast_sat_corr    =    hindcast.copy()
+        self.params_sat_corr      =    self.calibration('sat')
+        self.hindcast_buoy_corr   =    hindcast.copy()
+        self.params_buoy_corr     =    self.calibration('buoy')
         self.bath_spain           =    bath_spain
         self.bath_gebco           =    bath_gebco
     
@@ -98,8 +100,8 @@ class CalVal(object):
         elif calibration_type=='buoy':
             calibration_tot = pd.concat([self.buoy, self.hind_to_corr], 
                                         axis=1)
-            calibration = calibration_tot.iloc[calibration_tot['Hs_Buoy']\
-                                               .notna().values]
+            notna_values = calibration_tot['Hs_Buoy'].notna().values
+            calibration = calibration_tot.iloc[notna_values]
             hs_calibrate = calibration['Hs_Buoy'].values
             title = 'Buoy'
         else:
@@ -178,13 +180,18 @@ class CalVal(object):
         Hs_ncorr = np.sqrt(np.sum(Hs_ncorr_mat, axis=1))
         Hs_corr_mat = paramss * Hs_ncorr_mat
         Hs_corr = np.sqrt(np.sum(Hs_corr_mat, axis=1))
-        cal_r = self.hindcast.copy()
-        cal_r.iloc[self.possible_to_correct]['Hs_'+self.hind] = Hs_corr
-        cal_r.iloc[self.possible_to_correct]['Hs_'+self.hind+'_cal'] = Hs_corr
+        index_hs = np.where(self.hindcast.columns.values=='Hs_'+self.hind)[0][0]
+        index_hs_cal = np.where(self.hindcast.columns.values=='Hs_'+self.hind+'_cal')[0][0]
+        if calibration_type=='sat':
+            self.hindcast_sat_corr.iloc[self.possible_to_correct, index_hs] = Hs_corr
+            self.hindcast_sat_corr.iloc[self.possible_to_correct, index_hs_cal] = Hs_corr
+        else:
+            self.hindcast_buoy_corr.iloc[self.possible_to_correct, index_hs] = Hs_corr
+            self.hindcast_buoy_corr.iloc[self.possible_to_correct, index_hs_cal] = Hs_corr
         print(' \n  \n ')
         
         # return
-        return cal_r, params
+        return params
     
     
     def satellite_values(self, ini_lat, end_lat, ini_lon, end_lon):
