@@ -39,7 +39,7 @@ from .functions import rmse, bias, si, create_vec_direc, calibration_time
 class CalVal(object):
     
     
-    def __init__(self, buoy, hindcast, sat, hind, bath_spain, bath_gebco):
+    def __init__(self, buoy, hindcast, sat, hind):
         """ Initializes the class with all the necessary attributes that
             will be used in the different methods
             ------------
@@ -48,16 +48,13 @@ class CalVal(object):
             hindcast: Hindcast data as a dataframe
             sat: Satellite data as a netCDF (see extract_satellite.py)
             hind: Name of hindcast used (CSIRO or ERA5)
-            bath: Bathymetry that will be used to plot the map
             ------------
             Returns
             Attributes initialized and plots for both calibrations, the one
             done with the buoy and the other one performed with satellite
             data. The parameters for the calibrations are also stored
         """
-        
-        print('Initializing data to calibrate... \n ')
-        
+                
         self.buoy                 =    buoy
         self.hindcast             =    hindcast.copy()
         self.possible_to_correct  =    np.where(hindcast['Hs_'+hind+'_cal'] > 0.01)[0]        
@@ -68,14 +65,12 @@ class CalVal(object):
         self.params_sat_corr      =    self.calibration('sat')
         self.hindcast_buoy_corr   =    hindcast.copy()
         self.params_buoy_corr     =    self.calibration('buoy')
-        self.bath_spain           =    bath_spain
-        self.bath_gebco           =    bath_gebco
     
     
     def calibration(self, calibration_type):
         """ Calibrates hindcast with satellite or buoy data. This calibration
             is performed using a linear regression and selecting only those
-            parameters that are representative.
+            parameters that are representative
             ------------
             Parameters
             calibration_type: Type of calibration to be done (sat, buoy)
@@ -83,6 +78,10 @@ class CalVal(object):
             Returns
             Corrected data and calculated params
         """
+        
+        print('--------------------------------------------------------')
+        print(calibration_type.upper() + ' CALIBRATION will be performed')
+        print('-------------------------------------------------------- \n ')
         
         # Initializes satellite data to calibrate
         if calibration_type=='sat':
@@ -111,9 +110,6 @@ class CalVal(object):
         print(' \n ')
         
         # Construct matrices to calibrate
-        print('--------------------------------------------------------')
-        print(title.upper() + ' CALIBRATION')
-        print('-------------------------------------------------------- \n ')
         print('Constructing matrices and calibrating... \n ')
         
         Hsea    = create_vec_direc(calibration['Hsea_'+self.hind], \
@@ -226,7 +222,6 @@ class CalVal(object):
               str(len(self.hind_to_corr)) + ' \n ')
         
         # We perform the calibration
-        
         print('Choose the way to calibrate the data: ')
         type_calib_way = input('True: hindcast for each satellite \n' + 
                                'False: satellite for each hindcast \n' + 
@@ -427,6 +422,7 @@ class CalVal(object):
         n = int(input('Number of years: '))
         years = list(map(int, input('Years separated by one space: ')\
                          .strip().split()))[:n]
+        # years = [2006, 2007, 2008]
         
         print(' \n ')
         print('Comparing data... \n ')
@@ -512,7 +508,7 @@ class CalVal(object):
             return message
         
         print('--------------------------------------------------------')
-        print(validation_type.upper() + ' validation will be performed')
+        print(validation_type.upper() + ' VALIDATION will be performed')
         print('-------------------------------------------------------- \n ')
         
         validation = validation[['Hs_Buoy', 'Tp_Buoy', 'Dir_Buoy',
@@ -634,93 +630,4 @@ class CalVal(object):
                                        fontweight='bold')
                     axs[i,j].set_xlim(0, 20)
                     axs[i,j].set_ylim(0, 7.5)
-         
-            
-    def region_map(self):
-        """ Maps all the data to a regional zone where buoy, hindcast and
-            satellite information can be seen together with the bathymetry.
-            This bathymetry will be of great interest for the propagation
-            of the calibrated data to shallow waters
-            ------------
-            Parameters
-            ------------
-            Returns
-            A very good plot though
-        """
-        
-        plt.figure(figsize=(20,20))
-        print(' \n' )
-        print('MAP BOUNDARYS: ')
-        print('--------------------------------------------------------')
-        ini_lat = float(input('South latitude: ')) #43.0
-        end_lat = float(input('North latitude: ')) #44.4
-        ini_lon = float(input('West latitude: '))  #-4.6
-        end_lon = float(input('East latitude: '))  #-2.4
-        grid_step = float(input('Grid step resolution for the meridians: '))
-        depth = float(input('Maximum value for the bathymetry (+): '))
-        print('-------------------------------------------------------- \n ')
-        
-        # GEBCO bathymetry
-        print('Plotting gebco bathymetry... \n ')
-        self.bath_gebco = self.bath_gebco.sel(lat=slice(ini_lat, end_lat))\
-                                         .sel(lon=slice(ini_lon, end_lon)) 
-        self.bath_gebco.elevation.plot(vmax=-depth, levels=100, cmap='Blues_r')
-        plt.xlabel('')
-        plt.ylabel('')
-        
-        # SPAIN bathymetry
-        print('Plotting granulated bathymetry for near coast... \n ')
-        bat_reg = np.where((self.bath_spain[:,0]>ini_lon) & 
-                           (self.bath_spain[:,0]<end_lon) & 
-                           (self.bath_spain[:,1]>ini_lat) & 
-                           (self.bath_spain[:,1]<end_lat) & 
-                           (self.bath_spain[:,2]<depth))[0]
-        smc = plt.scatter(self.bath_spain[:,0][bat_reg], 
-                          self.bath_spain[:,1][bat_reg], s=1, 
-                          c=-self.bath_spain[:,2][bat_reg], cmap='magma', 
-                          vmax=0, vmin=-depth)
-        plt.colorbar(smc, extend='both')
-        print('La batimetría llega hasta: ' + \
-              str(np.min(-self.bath_spain[:,2][bat_reg])))
-        
-        # Land mask
-        m = Basemap(llcrnrlon=ini_lon,  llcrnrlat=ini_lat, 
-                    urcrnrlon=end_lon, urcrnrlat=end_lat, 
-                    resolution='f')
-        m.drawcoastlines()
-        m.drawmapboundary()
-        m.fillcontinents()
-        m.drawmeridians(np.arange(ini_lon, end_lon+grid_step, grid_step), 
-                        linewidth=0.5, labels=[1,0,0,1])
-        m.drawparallels(np.arange(ini_lat, end_lat+grid_step, grid_step), 
-                        linewidth=0.5, labels=[1,0,0,1])
-        
-        # Satellite used
-        sat_lats = self.sat.LATITUDE.values
-        sat_lons = self.sat.LONGITUDE.values
-        x_sat, y_sat = m(sat_lons, sat_lats)
-        x_sat , y_sat = [x-360 for x in list(x_sat)], list(y_sat)
-        m.scatter(x_sat, y_sat, marker='o', color='black', 
-                  label='Satélite', s=0.01)
-        
-        # Hindcast used
-        print('Coordinates for the hindcast: ')
-        x_hind = float(input('Longitude for the hindcast point: '))
-        y_hind = float(input('Latitude for the hindcast point: '))
-        x_hind, y_hind = m(-3.6, 44.0)
-        m.scatter(x_hind, y_hind, marker='o', color='darkred', 
-                  label=self.hind, s=75)
-        
-        # Buoy used
-        x_buoy = [-3.05] #float(input('Longitude for the buoy point: '))
-        y_buoy = [43.54] #float(input('Latitude for the buoy point: '))
-        x_buoy, y_buoy = m(x_buoy, y_buoy)
-        m.scatter(x_buoy, y_buoy, marker='D', color='b', 
-                  label='Bilbao-Vizcaya', s=75)
-        
-        plt.title('Mapa de la región seleccionada detallado', pad=20,
-                  fontdict={'fontname':'DejaVu Sans', 'size':'18', 'color':'black', 
-                            'weight':'normal', 'verticalalignment':'bottom'})
-        plt.legend(loc='lower left')
-        plt.show()
-        
+
