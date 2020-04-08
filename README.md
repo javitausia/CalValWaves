@@ -35,7 +35,7 @@ Example data is proportioned to the user to see how the toolbox works but in cas
 
 ![satdata](/data/satellite/steps.png)
 
-After clicking donwload .txt file and checking everything is correct, you can download the netCDFs files using `cd` to move to the folder where you want to store the data and then running the command `wget - i IMOS... .txt`. Finally, join the files using [extractcsiro](/data/satellite/extract_csiro.py).
+After clicking donwload .txt file and checking everything is correct, you can download the netCDFs files using `cd` to move to the folder where you want to store the data and then running the command `wget - i IMOS... .txt`. Finally, join the files using [join satellite](/data/satellite/extract_satellite.py).
 
 ### More detailed information could be updated regarding the acquisition of the data.
 
