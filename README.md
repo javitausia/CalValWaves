@@ -14,11 +14,11 @@ The area of study is the north of Spain (an explanation map can be seen below).
 
 ![map](/images/mapa-resumen.png)
 
-In this map, the node of reanalysis is shown with a red mark, the different satellite measures used to calibrate are represented with black points and the final validation will be done using the data of the buoy in blue. The calibration results can be shown in this figure:
+In this map, the node of reanalysis is shown with a red mark, the different satellite measures used to calibrate are represented with black points and the final validation will be done using the data of the buoy in purple. The calibration results can be shown in this figure:
 
 ![calibration](/images/calibration-satellite.png)
 
-For the validation, two figures will be shown. The first compares historically the performance of the buoy and the hindcast, once the significant wave height has been corrected, the second one shows different representative characteristics of both buoy and hindcast data:
+For the validation, two figures will be shown. The first compares historically the performance of the buoy and the hindcast, once the significant wave height has been corrected with the satellite, the second one shows different representative characteristics of both buoy and hindcast data:
 
 ![comparison](/images/comparison-satcorr-2007.png)
 ![validation](/images/validation-satellite.png)
@@ -33,11 +33,9 @@ Example data is proportioned to the user to see how the toolbox works but in cas
 
 - Satellite: IMOS satellite data has been used and it can be downloaded from the AODN (Australian Ocean Data Network) website. https://portal.aodn.org.au/ . The next figure explains the steps to follow to correctly dowload the data:
 
-![satdata](/data/bathymetry/steps.png)
+![satdata](/data/satellite/steps.png)
 
-After clicking donwload .txt file and checking everything is correct, you can download the netCDFs files using `cd` to move to the folder where you want to store the data and then running the command `wget - i IMOS....txt`. Finally, join the files using [extractcsiro](/data/satellite/extract_csiro.py).
-
-- Bathymetry: The GEBCO bathymetry is constant along the world and it can be downloaded as a netCDF from its website (https://www.gebco.net/). However, depending on the purpose of the project, more precise data should be requested. Here we use more precise bathymetry data in Spain.
+After clicking donwload .txt file and checking everything is correct, you can download the netCDFs files using `cd` to move to the folder where you want to store the data and then running the command `wget - i IMOS... .txt`. Finally, join the files using [extractcsiro](/data/satellite/extract_csiro.py).
 
 ### More detailed information could be updated regarding the acquisition of the data.
 
@@ -54,7 +52,7 @@ After clicking donwload .txt file and checking everything is correct, you can do
 - All the images present in this folder can be obtained using the python example. It is not necessary to explain what each image contains as they are self-explicative
 
 [data](./data/): Data used
-- All the data present in this folder is enough to run the python files and the jupyter notebook as a first example. If the toolbox wanna be used to calibrate and validate different data, it is compulsary to have a look in how the initial data has been preprocessed. For the hindcast and the buoy data, pandas dataframes are used, for the satellite, a netCDF file (as it is downloaded from the IMOS website), for the global GEBCO bathymetry, also a netCDF file and for the precise spanish bathymetry, a .dat file. Moreover, corrected data is included.
+- All the data present in this folder is enough to run the python files and the jupyter notebook as a first example. If the toolbox wanna be used to calibrate and validate different data, it is compulsary to have a look in how the initial data has been preprocessed. For the hindcast and the buoy data, pandas dataframes are used, for the satellite, a netCDF file (as it is downloaded from the IMOS website).
 
 ## 4. Installation
 
