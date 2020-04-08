@@ -33,7 +33,7 @@ Example data is proportioned to the user to see how the toolbox works but in cas
 
 - Satellite: IMOS satellite data has been used and it can be downloaded from the AODN (Australian Ocean Data Network) website. https://portal.aodn.org.au/ . The next figure explains the steps to follow to correctly dowload the data:
 
-![satdata](/data/satellite/steps.png)
+![satdata](/data/satellite/steps.png | width=200)
 
 After clicking donwload .txt file and checking everything is correct, you can download the netCDFs files using `cd` to move to the folder where you want to store the data and then running the command `wget - i IMOS... .txt`. Finally, join the files using [join satellite](/data/satellite/extract_satellite.py).
 
@@ -52,7 +52,7 @@ After clicking donwload .txt file and checking everything is correct, you can do
 - All the images present in this folder can be obtained using the python example. It is not necessary to explain what each image contains as they are self-explicative
 
 [data](./data/): Data used
-- All the data present in this folder is enough to run the python files and the jupyter notebook as a first example. If the toolbox wanna be used to calibrate and validate different data, it is compulsary to have a look in how the initial data has been preprocessed. For the hindcast and the buoy data, pandas dataframes are used, for the satellite, a netCDF file (as it is downloaded from the IMOS website).
+- All the data present in this folder is enough to run the python files and the jupyter notebook as a first example. If the toolbox wanna be used to calibrate and validate different data, it is compulsary to have a look in how the initial data has been preprocessed. For the hindcast and the buoy data, pandas dataframes are used, for the satellite, a netCDF file (as it is downloaded from the IMOS website)
 
 ## 4. Installation
 
