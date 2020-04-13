@@ -33,7 +33,7 @@ Example data is proportioned to the user to see how the toolbox works but in cas
 
 - Satellite: IMOS satellite data has been used and it can be downloaded from the AODN (Australian Ocean Data Network) website. https://portal.aodn.org.au/ . The next figure explains the steps to follow to correctly dowload the data:
 
-![satdata](/data/satellite/steps.png)
+![](https://github.com/javitausia/CalValWaves/blob/master/data/satellite/steps.png)
 <img src="https://github.com/javitausia/CalValWaves/blob/master/data/satellite/steps.png" width="30">
 
 After clicking donwload .txt file and checking everything is correct, you can download the netCDFs files using `cd` to move to the folder where you want to store the data and then running the command `wget - i IMOS... .txt`. Finally, join the files using [join satellite](/data/satellite/extract_satellite.py).
