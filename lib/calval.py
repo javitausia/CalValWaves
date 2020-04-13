@@ -39,7 +39,7 @@ from .functions import rmse, bias, si, create_vec_direc, calibration_time
 class CalVal(object):
     
     
-    def __init__(self, buoy, hindcast, sat, hind):
+    def __init__(self, buoy, hindcast, sat):
         """ Initializes the class with all the necessary attributes that
             will be used in the different methods
             ------------
@@ -47,7 +47,6 @@ class CalVal(object):
             buoy: Buoy data as a dataframe
             hindcast: Hindcast data as a dataframe
             sat: Satellite data as a netCDF (see extract_satellite.py)
-            hind: Name of hindcast used (CSIRO or ERA5)
             ------------
             Returns
             Attributes initialized and plots for both calibrations, the one
@@ -57,10 +56,9 @@ class CalVal(object):
                 
         self.buoy                 =    buoy
         self.hindcast             =    hindcast.copy()
-        self.possible_to_correct  =    np.where(hindcast['Hs_'+hind+'_cal'] > 0.01)[0]        
+        self.possible_to_correct  =    np.where(hindcast['Hs_cal'] > 0.01)[0]        
         self.hind_to_corr         =    hindcast.iloc[self.possible_to_correct]
         self.sat                  =    sat
-        self.hind                 =    hind
         self.hindcast_sat_corr    =    hindcast.copy()
         self.params_sat_corr      =    self.calibration('sat')
         self.hindcast_buoy_corr   =    hindcast.copy()
@@ -112,21 +110,21 @@ class CalVal(object):
         # Construct matrices to calibrate
         print('Constructing matrices and calibrating... \n ')
         
-        Hsea    = create_vec_direc(calibration['Hsea_'+self.hind], \
-                                   calibration['Dirsea_'+self.hind])
-        Hswell1 = create_vec_direc(calibration['Hswell1_'+self.hind], \
-                                   calibration['Dirswell1_'+self.hind])
-        Hswell2 = create_vec_direc(calibration['Hswell2_'+self.hind], \
-                                   calibration['Dirswell2_'+self.hind])
-        Hswell3 = create_vec_direc(calibration['Hswell3_'+self.hind], \
-                                   calibration['Dirswell3_'+self.hind])
+        Hsea    = create_vec_direc(calibration['Hsea'], \
+                                   calibration['Dirsea'])
+        Hswell1 = create_vec_direc(calibration['Hswell1'], \
+                                   calibration['Dirswell1'])
+        Hswell2 = create_vec_direc(calibration['Hswell2'], \
+                                   calibration['Dirswell2'])
+        Hswell3 = create_vec_direc(calibration['Hswell3'], \
+                                   calibration['Dirswell3'])
         Hs_ncorr_mat = np.concatenate([Hsea**2, Hswell1**2 + \
                                        Hswell2**2 + Hswell3**2], 
                                       axis=1)
         Hs_ncorr = np.sqrt(np.sum(Hs_ncorr_mat, axis=1))
         #---------------------------------------------------------------------#
         print('Value to set the umbral for not enough data to calibrate, ')
-        print('this value can be set to 0.01, 0.02 or 0.03: ' )
+        print('this value can be from 0.01 to 0.03: ' )
         th_ne = float(input('----- Threshold ----- : '))
         print(' \n ')
         #---------------------------------------------------------------------#
@@ -163,21 +161,21 @@ class CalVal(object):
         # Now, we will save all the data corrected
         print('Saving corrected results... \n ')
         
-        Hsea    = create_vec_direc(self.hind_to_corr['Hsea_'+self.hind], \
-                                   self.hind_to_corr['Dirsea_'+self.hind])
-        Hswell1 = create_vec_direc(self.hind_to_corr['Hswell1_'+self.hind], \
-                                   self.hind_to_corr['Dirswell1_'+self.hind])
-        Hswell2 = create_vec_direc(self.hind_to_corr['Hswell2_'+self.hind], \
-                                   self.hind_to_corr['Dirswell2_'+self.hind])
-        Hswell3 = create_vec_direc(self.hind_to_corr['Hswell3_'+self.hind], \
-                                   self.hind_to_corr['Dirswell3_'+self.hind])
+        Hsea    = create_vec_direc(self.hind_to_corr['Hsea'], \
+                                   self.hind_to_corr['Dirsea'])
+        Hswell1 = create_vec_direc(self.hind_to_corr['Hswell1'], \
+                                   self.hind_to_corr['Dirswell1'])
+        Hswell2 = create_vec_direc(self.hind_to_corr['Hswell2'], \
+                                   self.hind_to_corr['Dirswell2'])
+        Hswell3 = create_vec_direc(self.hind_to_corr['Hswell3'], \
+                                   self.hind_to_corr['Dirswell3'])
         Hs_ncorr_mat = np.concatenate([Hsea**2, Hswell1**2 + Hswell2**2 + \
                                        Hswell3**2], axis=1)
         Hs_ncorr = np.sqrt(np.sum(Hs_ncorr_mat, axis=1))
         Hs_corr_mat = paramss * Hs_ncorr_mat
         Hs_corr = np.sqrt(np.sum(Hs_corr_mat, axis=1))
-        index_hs = np.where(self.hindcast.columns.values=='Hs_'+self.hind)[0][0]
-        index_hs_cal = np.where(self.hindcast.columns.values=='Hs_'+self.hind+'_cal')[0][0]
+        index_hs = np.where(self.hindcast.columns.values=='Hs')[0][0]
+        index_hs_cal = np.where(self.hindcast.columns.values=='Hs_cal')[0][0]
         if calibration_type=='sat':
             self.hindcast_sat_corr.iloc[self.possible_to_correct, index_hs] = Hs_corr
             self.hindcast_sat_corr.iloc[self.possible_to_correct, index_hs_cal] = Hs_corr
@@ -277,7 +275,7 @@ class CalVal(object):
         num='1'
         fig, axs = plt.subplots(2, 3, figsize=(20,20))
         fig.subplots_adjust(hspace=0.2, wspace=0.2)
-        fig.suptitle(str(self.hind) + ' hindcast calibration with ' + 
+        fig.suptitle('CSIRO hindcast calibration with ' + 
                      big_title + ' data', 
                      fontsize=24, y=0.98, fontweight='bold')
         for i in range(2):
@@ -326,19 +324,19 @@ class CalVal(object):
                     
                 elif (i==0 and j==1 or i==0 and j==2):
                     if j==1:
-                        dataj1 = data[['Dirsea_'+self.hind, \
-                                       'Hsea_'+self.hind]].\
+                        dataj1 = data[['Dirsea', \
+                                       'Hsea']].\
                                        dropna(axis=0, how='any')
-                        x, y = dataj1['Dirsea_'+self.hind], \
-                               dataj1['Hsea_'+self.hind]
+                        x, y = dataj1['Dirsea'], \
+                               dataj1['Hsea']
                         index = 2
                         title = 'Sea'
                     else:
-                        dataj2 = data[['Dirswell'+num+'_'+self.hind, \
-                                       'Hswell'+num+'_'+self.hind]].\
+                        dataj2 = data[['Dirswell'+num, \
+                                       'Hswell'+num]].\
                                        dropna(axis=0, how='any')
-                        x, y = dataj2['Dirswell'+num+'_'+self.hind], \
-                               dataj2['Hswell'+num+'_'+self.hind]
+                        x, y = dataj2['Dirswell'+num], \
+                               dataj2['Hswell'+num]
                         index = 3
                         title = 'Swell '+num
                         
@@ -414,9 +412,7 @@ class CalVal(object):
         print('-------------------------------------------------------- \n ')
         
         comparison = comparison[['Hs_Buoy', 'Tp_Buoy', 'Dir_Buoy',
-                                 'Hs_'+self.hind, 
-                                 'Tp_'+self.hind, 
-                                 'Dir_'+self.hind]]
+                                 'Hs', 'Tp', 'DirP']]
         
         # Perform the comparison
         n = int(input('Number of years: '))
@@ -436,7 +432,7 @@ class CalVal(object):
             fig.subplots_adjust(hspace=0.05, wspace=0.1)
             fig.suptitle('Year: ' + str(year) + 
                          ', Bilbao-Vizcaya Ext buoy validation with ' + 
-                         comparison_type.upper()+ ' ' +self.hind, 
+                         comparison_type.upper()+ ' CSIRO', 
                          fontsize=24, y=0.94, fontweight='bold')
             months = ['                        Jan', 
                       '                        Feb', 
@@ -477,7 +473,7 @@ class CalVal(object):
                                       fontweight='bold')
                     axs[i].grid()
                     axs[i].tick_params(direction='in')
-                fig.legend(['Buoy', self.hind], loc=(0.66, 0.04), ncol=3, 
+                fig.legend(['Buoy', 'Modelo'], loc=(0.66, 0.04), ncol=3, 
                            fontsize=14)
                 i += 1
            
@@ -512,9 +508,7 @@ class CalVal(object):
         print('-------------------------------------------------------- \n ')
         
         validation = validation[['Hs_Buoy', 'Tp_Buoy', 'Dir_Buoy',
-                                 'Hs_'+self.hind, 
-                                 'Tp_'+self.hind, 
-                                 'Dir_'+self.hind]]
+                                 'Hs', 'Tp', 'DirP']]
         validation = validation.dropna(axis=0, how='any')
         
         print('Validating and plotting validated data... \n ')
@@ -522,7 +516,7 @@ class CalVal(object):
         
         fig, axs = plt.subplots(2, 3, figsize=(20,20))
         fig.subplots_adjust(hspace=0.2, wspace=0.2)
-        fig.suptitle('Hindcast: ' + str(self.hind) + 
+        fig.suptitle('Hindcast: CSIRO' + 
                      ', Bilbao-Vizcaya Ext buoy validation \n ' +title, 
                      fontsize=24, y=0.98, fontweight='bold')
         
@@ -531,11 +525,11 @@ class CalVal(object):
                 if (i==j==0 or i==1 and j==0):
                     if i==0:
                         x, y = validation['Hs_Buoy'], \
-                               validation['Hs_'+self.hind]
+                               validation['Hs']
                         title = 'Hs [m]'
                     else:
                         x, y = validation['Tp_Buoy'], \
-                               validation['Tp_'+self.hind]
+                               validation['Tp']
                         title = 'Tp [s]'
                         
                     xy = np.vstack([x, y])
@@ -574,7 +568,7 @@ class CalVal(object):
                     
                 elif (i==0 and j==1 or i==0 and j==2):
                     idx_buoy = validation['Tp_Buoy'].argsort()
-                    idx_hind = validation['Tp_'+self.hind].argsort()
+                    idx_hind = validation['Tp'].argsort()
                     if j==1:
                         x, y = validation['Dir_Buoy'][idx_buoy], \
                                validation['Hs_Buoy'][idx_buoy]
@@ -582,10 +576,10 @@ class CalVal(object):
                         c = validation['Tp_Buoy'][idx_buoy]
                         title = 'Boya'
                     else:
-                        x, y = validation['Dir_'+self.hind][idx_hind], \
-                               validation['Hs_'+self.hind][idx_hind]
+                        x, y = validation['DirP'][idx_hind], \
+                               validation['Hs'][idx_hind]
                         index = 3
-                        c = validation['Tp_'+self.hind][idx_hind]
+                        c = validation['Tp'][idx_hind]
                         title = 'Modelo'
                     x = (x*np.pi)/180
                     axs[i,j].axis('off')
@@ -613,8 +607,8 @@ class CalVal(object):
                         c = 'darkblue'
                         title = 'Boya'
                     else:
-                        x, y = validation['Tp_'+self.hind], \
-                               validation['Hs_'+self.hind]
+                        x, y = validation['Tp'], \
+                               validation['Hs']
                         c = 'red'
                         title = 'Modelo'
                     xy = np.vstack([x, y])

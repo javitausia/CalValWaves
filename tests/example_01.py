@@ -28,22 +28,25 @@ p_data = op.abspath(op.join(op.dirname(__file__), '..', 'data'))
 # Buoy data
 buoy       =  pd.read_pickle(op.join(p_data, 'buoy', 
                                      'Bilbao-Vizcaya Ext.pkl'))
+print(buoy.info())
 
 # Csiro data
 csiro      =  pd.read_pickle(op.join(p_data, 'hindcast', 
                                      'csiro_dataframe.pkl'))
+print(csiro.info())
 
 # Satellite data, see extract_csiro.py
 # An example for satellite boundary box is:
 # 43.8, 44.2, 356.2, 356.6
 satellite  =  xr.open_dataset(op.join(p_data, 'satellite', 
                                       'satellite_dataset.nc'))
+print(satellite)
 
 print('--------------------------------------------------------')
 print('Initializing the constructor...')
 print('--------------------------------------------------------')
 
-calval_case = CalVal(buoy, csiro, satellite, 'CSIRO')
+calval_case = CalVal(buoy, csiro, satellite)
 
 print('Time wasted initializing the constructor: ' 
       + str((time()-t0)/60) + ' m')
