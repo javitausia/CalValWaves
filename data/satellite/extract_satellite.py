@@ -13,7 +13,7 @@ sat_datasets = []
 cs = 0
 step = 20
 print('--------------------------------------------------------')
-print('Concatinating csiro files in steps of ' + str(step))
+print('Concatinating satellite files in steps of ' + str(step))
 print('--------------------------------------------------------')
 for root, dirs, files in os.walk(os.path.join(os.getcwd(), 'sat_netCDFs'), 
                                  topdown=True):
