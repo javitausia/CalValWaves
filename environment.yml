@@ -11,4 +11,4 @@ dependencies:
         - basemap
         - basemap-data-hires
         - spyder
-        - jupyter notebook
+        - notebook
