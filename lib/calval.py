@@ -169,18 +169,38 @@ class CalVal(object):
                                    self.hind_to_corr['Dirswell2'])
         Hswell3 = create_vec_direc(self.hind_to_corr['Hswell3'], \
                                    self.hind_to_corr['Dirswell3'])
-        Hs_ncorr_mat = np.concatenate([Hsea**2, Hswell1**2 + Hswell2**2 + \
-                                       Hswell3**2], axis=1)
-        Hs_ncorr = np.sqrt(np.sum(Hs_ncorr_mat, axis=1))
-        Hs_corr_mat = paramss * Hs_ncorr_mat
-        Hs_corr = np.sqrt(np.sum(Hs_corr_mat, axis=1))
-        index_hs = np.where(self.hindcast.columns.values=='Hs')[0][0]
-        index_hs_cal = np.where(self.hindcast.columns.values=='Hs_cal')[0][0]
+        Hsea_corr_mat    = paramss[:,0:16]  * Hsea**2
+        Hswell1_corr_mat = paramss[:,16:32] * Hswell1**2
+        Hswell2_corr_mat = paramss[:,16:32] * Hswell2**2
+        Hswell3_corr_mat = paramss[:,16:32] * Hswell3**2
+        Hsea_corr        = np.sqrt(np.sum(Hsea_corr_mat, axis=1))
+        Hswell1_corr     = np.sqrt(np.sum(Hswell1_corr_mat, axis=1))
+        Hswell2_corr     = np.sqrt(np.sum(Hswell2_corr_mat, axis=1))
+        Hswell3_corr     = np.sqrt(np.sum(Hswell3_corr_mat, axis=1))
+        Hs_ncorr_mat     = np.concatenate([Hsea**2, Hswell1**2 + Hswell2**2 + \
+                                           Hswell3**2], axis=1)
+        Hs_ncorr         = np.sqrt(np.sum(Hs_ncorr_mat, axis=1))
+        Hs_corr_mat      = paramss * Hs_ncorr_mat
+        Hs_corr          = np.sqrt(np.sum(Hs_corr_mat, axis=1))
+        index_hs      = np.where(self.hindcast.columns.values=='Hs')[0][0]
+        index_hsea    = np.where(self.hindcast.columns.values=='Hsea')[0][0]
+        index_hswell1 = np.where(self.hindcast.columns.values=='Hswell1')[0][0]
+        index_hswell2 = np.where(self.hindcast.columns.values=='Hswell2')[0][0]
+        index_hswell3 = np.where(self.hindcast.columns.values=='Hswell3')[0][0]
+        index_hs_cal  = np.where(self.hindcast.columns.values=='Hs_cal')[0][0]
         if calibration_type=='sat':
             self.hindcast_sat_corr.iloc[self.possible_to_correct, index_hs] = Hs_corr
+            self.hindcast_sat_corr.iloc[self.possible_to_correct, index_hsea] = Hsea_corr
+            self.hindcast_sat_corr.iloc[self.possible_to_correct, index_hswell1] = Hswell1_corr
+            self.hindcast_sat_corr.iloc[self.possible_to_correct, index_hswell2] = Hswell2_corr
+            self.hindcast_sat_corr.iloc[self.possible_to_correct, index_hswell3] = Hswell3_corr
             self.hindcast_sat_corr.iloc[self.possible_to_correct, index_hs_cal] = Hs_corr
         else:
             self.hindcast_buoy_corr.iloc[self.possible_to_correct, index_hs] = Hs_corr
+            self.hindcast_buoy_corr.iloc[self.possible_to_correct, index_hsea] = Hsea_corr
+            self.hindcast_buoy_corr.iloc[self.possible_to_correct, index_hswell1] = Hswell1_corr
+            self.hindcast_buoy_corr.iloc[self.possible_to_correct, index_hswell2] = Hswell2_corr
+            self.hindcast_buoy_corr.iloc[self.possible_to_correct, index_hswell3] = Hswell3_corr
             self.hindcast_buoy_corr.iloc[self.possible_to_correct, index_hs_cal] = Hs_corr
         print(' \n  \n ')
         
