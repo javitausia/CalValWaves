@@ -1,40 +1,4 @@
-###############################################################################
-######            JAVIER TAUSÍA HOYAL                                    ######
-######            20 de Marzo de 2020                                    ######
-###############################################################################
-
-# common
-import sys
-import os
-import os.path as op
-
-# basic
 import numpy as np
-import pandas as pd
-import xarray as xr
-from scipy.io import loadmat
-
-# plotting
-import matplotlib as mpl
-from matplotlib import pyplot as plt
-import matplotlib.cm as cm
-from matplotlib.colors import Normalize
-import cmocean
-from pandas.plotting import register_matplotlib_converters
-register_matplotlib_converters()
-from mpl_toolkits.basemap import Basemap
-
-# additional
-from time import time
-from datetime import datetime as dt
-from datetime import timedelta as td
-
-# additional*
-import scipy.stats as stats
-from scipy.stats import gaussian_kde
-from sklearn.metrics import mean_squared_error
-from sklearn import datasets, linear_model, metrics
-import statsmodels.api as sm
 
 #-----------------------------------------------------------------------------#
 # Metric and accuracy functions
