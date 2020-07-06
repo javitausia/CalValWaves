@@ -1,3 +1,5 @@
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/javitausia/CalValWaves/master)
+
 # CalValWaves 
 
 ### Calibration and validation of hindcast information
@@ -14,7 +16,7 @@ The area of study is the north of Spain (an explanation map can be seen below).
 
 ![map](/images/mapa-resumen.png)
 
-In this map, the node of reanalysis is shown with a red mark, the different satellite measures used to calibrate are represented with black points and the final validation will be done using the data of the buoy in purple. The calibration results can be shown in this figure:
+In this map, the node of reanalysis is shown with a red mark, the different satellite measures used to calibrate are represented with black points and the final validation will be done using the data of the buoy in purple. The calibration results are shown in this figure:
 
 ![calibration](/images/calibration-satellite.png)
 
