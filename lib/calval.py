@@ -1,34 +1,22 @@
-# common
-import sys
-import os
-import os.path as op
-
 # basic
 import numpy as np
 import pandas as pd
-import xarray as xr
-from scipy.io import loadmat
 
 # plotting
 import matplotlib as mpl
 from matplotlib import pyplot as plt
-import matplotlib.cm as cm
-from matplotlib.colors import Normalize
 import cmocean
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
-from mpl_toolkits.basemap import Basemap
 
 # additional
-from time import time
-from datetime import datetime as dt
 from datetime import timedelta as td
 
 # additional*
 import scipy.stats as stats
 from scipy.stats import gaussian_kde
 from sklearn.metrics import mean_squared_error
-from sklearn import datasets, linear_model, metrics
+from sklearn import linear_model
 import statsmodels.api as sm
 
 # custom
@@ -68,10 +56,10 @@ class CalVal(object):
     def calibration(self, calibration_type):
         """ Calibrates hindcast with satellite or buoy data. This calibration
             is performed using a linear regression and selecting only those
-            parameters that are representative
+            parameters that are significantly representative
             ------------
             Parameters
-            calibration_type: Type of calibration to be done (sat, buoy)
+            calibration_type: (Str) Type of calibration to be done (sat, buoy)
             ------------
             Returns
             Corrected data and calculated params
@@ -102,8 +90,7 @@ class CalVal(object):
             hs_calibrate = calibration['Hs_Buoy'].values
             title = 'Buoy'
         else:
-            message = 'Not a valid value for calibration_type'
-            return message
+            return 'Not a valid value for calibration_type'
         
         print(' \n ')
         
@@ -188,6 +175,7 @@ class CalVal(object):
         index_hswell2 = np.where(self.hindcast.columns.values=='Hswell2')[0][0]
         index_hswell3 = np.where(self.hindcast.columns.values=='Hswell3')[0][0]
         index_hs_cal  = np.where(self.hindcast.columns.values=='Hs_cal')[0][0]
+        
         if calibration_type=='sat':
             self.hindcast_sat_corr.iloc[self.possible_to_correct, index_hs] = Hs_corr
             self.hindcast_sat_corr.iloc[self.possible_to_correct, index_hsea] = Hsea_corr
@@ -210,15 +198,15 @@ class CalVal(object):
     
     def satellite_values(self, ini_lat, end_lat, ini_lon, end_lon):
         """ Performs the time calibration step that allows us to perform the
-            calibration between the hindcast and the buoy data
+            calibration between the hindcast and the satellite data
             ------------
             Parameters
             Lats and lons to generate the box with the satellite data that
             will be used, previously selected by input
             ------------
             Returns
-            Significant height for the satellite and a reduced dataframe for
-            the hindcast data
+            Significant wave height for the satellite and a reduced dataframe
+            for the hindcast data
         """
         
         # SATELLITE
@@ -303,10 +291,10 @@ class CalVal(object):
                 if (i==j==0 or i==1 and j==0):
                     if i==0:
                         x, y = hs, xx1
-                        title = 'No corrected, Hs [m]'
+                        title = 'No corrected, $H_S$ [m]'
                     else:
                         x, y = hs, xx2
-                        title = 'Corrected, Hs [m]'
+                        title = 'Corrected, $H_S$ [m]'
                         
                     xy = np.vstack([x, y])
                     z = gaussian_kde(xy)(xy) 
@@ -372,9 +360,9 @@ class CalVal(object):
                     axs[i,j].set_xticklabels(['N', 'NE', 'E','SE', 
                                               'S', 'SW', 'W', 'NW'])
                     axs[i,j].set_theta_direction(-1)
-                    axs[i,j].set_xlabel('Dir [º]', fontsize=12, 
+                    axs[i,j].set_xlabel('$\theta_{m}$ [º]', fontsize=12, 
                                         fontweight='bold')
-                    axs[i,j].set_ylabel('Hs [m]', labelpad=20, fontsize=12, 
+                    axs[i,j].set_ylabel('$H_S$ [m]', labelpad=20, fontsize=12, 
                                         fontweight='bold')
                     axs[i,j].set_title(title, pad=15, fontsize=12, 
                                        fontweight='bold')
@@ -424,15 +412,14 @@ class CalVal(object):
         elif comparison_type=='buoy_corr':
             comparison = pd.concat([self.buoy, self.hindcast_buoy_corr], axis=1)
         else:
-            message = 'Not a valid value for comparison_type'
-            return message
+            return 'Not a valid value for comparison_type'
         
         print('--------------------------------------------------------')
         print(comparison_type.upper() + ' comparison will be performed')
         print('-------------------------------------------------------- \n ')
         
         comparison = comparison[['Hs_Buoy', 'Tp_Buoy', 'Dir_Buoy',
-                                 'Hs', 'Tp', 'DirP']]
+                                 'Hs', 'Tp', 'DirM']]
         
         # Perform the comparison
         n = int(input('Number of years: '))
@@ -466,7 +453,7 @@ class CalVal(object):
                       '                        Oct', 
                       '                        Nov', 
                       '                        Dec']
-            labels = ['Hs [m]', 'Tp [s]', 'Dir [s]']
+            labels = ['$H_S$ [m]', '$T_P$ [s]', '$\theta_{m}$ [º]']
             
             i = 0
             while i < 3:
@@ -520,15 +507,14 @@ class CalVal(object):
             validation = pd.concat([self.buoy, self.hindcast_buoy_corr], axis=1)
             title = 'Previosly corrected with satellite data'
         else:
-            message = 'Not a valid value for validation_type'
-            return message
+            return 'Not a valid value for validation_type'
         
         print('--------------------------------------------------------')
         print(validation_type.upper() + ' VALIDATION will be performed')
         print('-------------------------------------------------------- \n ')
         
         validation = validation[['Hs_Buoy', 'Tp_Buoy', 'Dir_Buoy',
-                                 'Hs', 'Tp', 'DirP']]
+                                 'Hs', 'Tp', 'DirM']]
         validation = validation.dropna(axis=0, how='any')
         
         print('Validating and plotting validated data... \n ')
@@ -546,11 +532,11 @@ class CalVal(object):
                     if i==0:
                         x, y = validation['Hs_Buoy'], \
                                validation['Hs']
-                        title = 'Hs [m]'
+                        title = '$H_S$ [m]'
                     else:
                         x, y = validation['Tp_Buoy'], \
                                validation['Tp']
-                        title = 'Tp [s]'
+                        title = '$T_P$ [s]'
                         
                     xy = np.vstack([x, y])
                     z = gaussian_kde(xy)(xy) 
@@ -596,7 +582,7 @@ class CalVal(object):
                         c = validation['Tp_Buoy'][idx_buoy]
                         title = 'Boya'
                     else:
-                        x, y = validation['DirP'][idx_hind], \
+                        x, y = validation['DirM'][idx_hind], \
                                validation['Hs'][idx_hind]
                         index = 3
                         c = validation['Tp'][idx_hind]
@@ -607,15 +593,15 @@ class CalVal(object):
                     c = axs[i,j].scatter(x, y, c=c, s=5, cmap='magma_r', 
                                          alpha=0.75)
                     cbar = plt.colorbar(c, pad=0.1)
-                    cbar.ax.set_ylabel('Tp [s]', fontsize=12, 
+                    cbar.ax.set_ylabel('$T_P$ [s]', fontsize=12, 
                                        fontweight='bold')
                     axs[i,j].set_theta_zero_location('N', offset=0)
                     axs[i,j].set_xticklabels(['N', 'NE', 'E','SE', 
                                               'S', 'SW', 'W', 'NW'])
                     axs[i,j].set_theta_direction(-1)
-                    axs[i,j].set_xlabel('Dir [º]', fontsize=12, 
+                    axs[i,j].set_xlabel('$\theta_{m}$ [º]', fontsize=12, 
                                         fontweight='bold')
-                    axs[i,j].set_ylabel('Hs [m]', labelpad=20, fontsize=12, 
+                    axs[i,j].set_ylabel('$H_S$ [m]', labelpad=20, fontsize=12, 
                                         fontweight='bold')
                     axs[i,j].set_title(title, pad=15, fontsize=12, 
                                        fontweight='bold')
