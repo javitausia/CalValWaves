@@ -16,4 +16,3 @@ dependencies:
         - spyder
         - notebook
 	- netCDF4
-	
