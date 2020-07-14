@@ -6,7 +6,6 @@ dependencies:
         - numpy
         - pandas
         - xarray
-	- netCDF4
         - matplotlib
         - scikit-learn
         - scipy
@@ -14,5 +13,6 @@ dependencies:
         - cmocean
         - basemap
         - basemap-data-hires
+	- netCDF4
         - spyder
         - notebook
