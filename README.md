@@ -10,9 +10,9 @@ CalValWaves is a open-source software toolkit written in python that enables the
 
 ## 1. Description
 
-Hindcast models are very useful as they have information of different variables for a very long and constant period of time. In this case, this data will be used after been calibrated to propagate waves from the point where the node of the hindcast is located to shallow waters, and it is very important to have constant data along a very large period of time, so the propagations can be representative. The problem now is that these hindcasts are sometimes a little incorrect, and this is why we must calibrate them first with satellite data and validate them after all with a nerby buoy to see if data correlates.
+Numerical reanalysis are very useful as they have information of different variables for a very long and constant period of time. In this case, this data will be used after been calibrated to propagate waves from the point where the node of the reanalysis is located to shallow waters, and it is very important to have constant data along a very large period of time, so the propagations can be representative. The problem now is that these hindcasts are not perfect, and this is why we must calibrate them first with satellite data and validate them after all with a nerby buoy to see if data correlates.
 
-The area of study is the north of Spain (an explanation map can be seen below). 
+The area of study is the north of Spain (an explanation map can be seen below).
 
 ![map](/images/mapa-resumen.png)
 
@@ -29,11 +29,11 @@ For the validation, two figures will be shown. The first compares historically t
 
 Example data is proportioned to the user to see how the toolbox works but in case the process needs to be donde in another location along the world, then this data will have to be acquired and preprocessed for that new place. There is not a unique way to obtain the data, but here is how we have donde it.
 
-- Buoy: This is the most relative part, as it depends of the country you are working on, for Spain, as it is our area of study, data can be requested using the goverment resources. http://www.puertos.es/es-es/oceanografia/Paginas/portus.aspx
+- Buoy: This is the most relative part, as it depends on the country you are working on, for Spain, as it is our area of study, data can be requested using the goverment resources: http://www.puertos.es/es-es/oceanografia/Paginas/portus.aspx
 
-- Hincast: Different hindcasts are open to users. In this work, we have used both CSIRO and ERA5, but we have finally decided CSIRO is the most suitable for the purpose of the global project. Both hidcasts can be requested online.
+- Hincast: Different hindcasts are open to users. In this work, we have used both CSIRO and ERA5, but we have finally decided CSIRO is the most suitable for the purpose of the global project. Both hidcasts can be downloaded online.
 
-- Satellite: IMOS satellite data has been used and it can be downloaded from the AODN (Australian Ocean Data Network) website. https://portal.aodn.org.au/ . The next figure explains the steps to follow to correctly dowload the data:
+- Satellite: IMOS satellite data has been used and it can be downloaded from the AODN (Australian Ocean Data Network) website: https://portal.aodn.org.au/ . The next figure explains the steps to follow to correctly dowload the data:
 
 ![](https://github.com/javitausia/CalValWaves/blob/master/data/satellite/steps.png)
 <img src="https://github.com/javitausia/CalValWaves/blob/master/data/satellite/steps.png" width="10">
@@ -52,7 +52,7 @@ After clicking donwload .txt file and checking everything is correct, you can do
 - [python example](./tests/example_01.py): Example of how to use the library
 
 [images](./images/): Image examples
-- All the images present in this folder can be obtained using the python example. It is not necessary to explain what each image contains as they are self-explicative
+- All the images in this folder can be obtained using the python example. It is not necessary to explain what each image contains as they are self-explicative
 
 [data](./data/): Data used
 - All the data present in this folder is enough to run the python files and the jupyter notebook as a first example. If the toolbox wanna be used to calibrate and validate different data, it is compulsary to have a look in how the initial data has been preprocessed. For the hindcast and the buoy data, pandas dataframes are used, for the satellite, a netCDF file (as it is downloaded from the IMOS website)
