@@ -1,5 +1,6 @@
 channels:
         - defaults
+	- anaconda
         - conda-forge
 dependencies:
         - python
@@ -9,7 +10,7 @@ dependencies:
         - matplotlib
         - scikit-learn
         - scipy
-        - statsmodel
+        - statsmodels
         - cmocean
         - basemap
         - basemap-data-hires
