@@ -33,7 +33,7 @@ Example data is proportioned to the user to see how the toolbox works but in cas
 
 - Hincast: Different hindcasts are open to users. In this work, we have used both CSIRO and ERA5, but we have finally decided CSIRO is the most suitable for the purpose of the global project. Both hidcasts can be downloaded online.
 
-- Satellite: IMOS satellite data has been used and it can be downloaded from the AODN (Australian Ocean Data Network) website: https://portal.aodn.org.au/ . The next figure explains the steps to follow to correctly dowload the data:
+- Satellite: IMOS satellite data has been used and it can be downloaded from the AODN (Australian Ocean Data Network) website: https://portal.aodn.org.au/. The next figure explains the steps to follow to correctly dowload the data:
 
 ![](https://github.com/javitausia/CalValWaves/blob/master/data/satellite/steps.png)
 <img src="https://github.com/javitausia/CalValWaves/blob/master/data/satellite/steps.png" width="10">
