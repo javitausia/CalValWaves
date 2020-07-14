@@ -5,9 +5,12 @@ dependencies:
         - python
         - numpy
         - pandas
+        - xarray
         - matplotlib
         - scikit-learn
         - scipy
+        - statsmodel
+        - cmocean
         - basemap
         - basemap-data-hires
         - spyder
