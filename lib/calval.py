@@ -360,7 +360,7 @@ class CalVal(object):
                     axs[i,j].set_xticklabels(['N', 'NE', 'E','SE', 
                                               'S', 'SW', 'W', 'NW'])
                     axs[i,j].set_theta_direction(-1)
-                    axs[i,j].set_xlabel('$\theta_{m}$ [º]', fontsize=12, 
+                    axs[i,j].set_xlabel('$\u03B8_{m}$ [$\degree$]', fontsize=12, 
                                         fontweight='bold')
                     axs[i,j].set_ylabel('$H_S$ [m]', labelpad=20, fontsize=12, 
                                         fontweight='bold')
@@ -453,7 +453,7 @@ class CalVal(object):
                       '                        Oct', 
                       '                        Nov', 
                       '                        Dec']
-            labels = ['$H_S$ [m]', '$T_P$ [s]', '$\theta_{m}$ [º]']
+            labels = ['$H_S$ [m]', '$T_P$ [s]', '$\u03B8_{m}$ [$\degree$]']
             
             i = 0
             while i < 3:
@@ -599,7 +599,7 @@ class CalVal(object):
                     axs[i,j].set_xticklabels(['N', 'NE', 'E','SE', 
                                               'S', 'SW', 'W', 'NW'])
                     axs[i,j].set_theta_direction(-1)
-                    axs[i,j].set_xlabel('$\theta_{m}$ [º]', fontsize=12, 
+                    axs[i,j].set_xlabel('$\u03B8_{m}$ [$\degree$]', fontsize=12, 
                                         fontweight='bold')
                     axs[i,j].set_ylabel('$H_S$ [m]', labelpad=20, fontsize=12, 
                                         fontweight='bold')
