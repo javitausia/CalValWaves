@@ -6,7 +6,6 @@ dependencies:
         - numpy
         - pandas
         - xarray
-	- netCDF4==1.5.3
         - matplotlib
         - scikit-learn
         - scipy
