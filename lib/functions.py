@@ -18,6 +18,8 @@ def si(pred, tar):
 def create_vec_direc(waves, direcs):
     data = np.zeros((len(waves), 16))
     for i in range(len(waves)):
+        if (((i/len(waves))*100)%5 == 0):
+            print(str((i/len(waves))*100) + '% completed...')
         if (direcs[i] < 0):
             direcs[i] = direcs[i] + 360
         if (direcs[i] > 0 and waves[i] > 0):

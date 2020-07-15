@@ -96,9 +96,13 @@ class CalVal(object):
         
         # Construct matrices to calibrate
         print('Constructing matrices and calibrating... \n ')
+        print('This might take a few minutes... \n')
         
+        print('Sea... \n')
         Hsea    = create_vec_direc(calibration['Hsea'], \
                                    calibration['Dirsea'])
+        print('\n')
+        print('Swells 1, 2, 3... \n')
         Hswell1 = create_vec_direc(calibration['Hswell1'], \
                                    calibration['Dirswell1'])
         Hswell2 = create_vec_direc(calibration['Hswell2'], \
@@ -110,6 +114,7 @@ class CalVal(object):
                                       axis=1)
         Hs_ncorr = np.sqrt(np.sum(Hs_ncorr_mat, axis=1))
         #---------------------------------------------------------------------#
+        print('\n')
         print('Value to set the umbral for not enough data to calibrate, ')
         print('this value can be from 0.01 to 0.03: ' )
         th_ne = float(input('----- Threshold ----- : '))
@@ -147,9 +152,13 @@ class CalVal(object):
         
         # Now, we will save all the data corrected
         print('Saving corrected results... \n ')
+        print('This might take more than a few minutes... \n')
         
+        print('Sea... \n')
         Hsea    = create_vec_direc(self.hind_to_corr['Hsea'], \
                                    self.hind_to_corr['Dirsea'])
+        print('\n')
+        print('Swells 1, 2, 3... \n')
         Hswell1 = create_vec_direc(self.hind_to_corr['Hswell1'], \
                                    self.hind_to_corr['Dirswell1'])
         Hswell2 = create_vec_direc(self.hind_to_corr['Hswell2'], \
