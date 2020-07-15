@@ -22,7 +22,9 @@ In this map, the node of reanalysis is shown with a red mark, the different sate
 
 For the validation, two figures will be shown. The first compares historically the performance of the buoy and the hindcast, once the significant wave height has been corrected with the satellite, the second one shows different representative characteristics of both buoy and hindcast data:
 
-![comparison](/images/comparison-satcorr-2007.png)
+![comparison1](/images/comparison-satcorr-2006.png)
+![comparison2](/images/comparison-satcorr-2007.png)
+![comparison3](/images/comparison-satcorr-2008.png)
 ![validation](/images/validation-satellite.png)
 
 ## 2. Data download
