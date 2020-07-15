@@ -385,7 +385,8 @@ class CalVal(object):
                     axs[i,j].pie(fracs, labels=None, 
                                  colors=my_cmap(my_norm(color_vals)), 
                                  startangle=90, counterclock=False)
-                    axs[i,j].set_title(title, fontsize=12, fontweight='bold')
+                    axs[i,j].set_title(title, fontsize=12, fontweight='bold',
+                                       pad=-5)
                     if j==1:
                         ax_cb = fig.add_axes([0.625,0.15,0.02,.25])
                         cb = mpl.colorbar.ColorbarBase(ax_cb, cmap=my_cmap, 
@@ -622,9 +623,9 @@ class CalVal(object):
                     idx = z.argsort()                                                  
                     x2, y2, z = x[idx], y[idx], z[idx]
                     axs[i,j].scatter(x2, y2, c=z, s=3, cmap='Blues_r')
-                    axs[i,j].set_xlabel('Tp [s]', fontsize=12, 
+                    axs[i,j].set_xlabel('$T_P$ [s]', fontsize=12, 
                                         fontweight='bold')
-                    axs[i,j].set_ylabel('Hs [m]', fontsize=12, 
+                    axs[i,j].set_ylabel('$H_S$ [m]', fontsize=12, 
                                         fontweight='bold')
                     axs[i,j].set_title(title, fontsize=12, 
                                        fontweight='bold')
