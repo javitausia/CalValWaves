@@ -4,7 +4,7 @@
 
 ### Calibration and validation of hindcast information
 
-CalValWaves is a open-source software toolkit written in python that enables the users to calibrate and validate hindcast data. This hindcast significant wave height data can be calibrated using both buoy and satellite significant height of waves as the "good" measure, but the way we prefer to do it is calibrating first with the satellite data and validating with the buoy after the calibration. A description of what has been done can be seen in this paper:
+CalValWaves is an open-source software toolkit written in python that enables the users to calibrate and validate hindcast data. This hindcast significant wave height data can be calibrated using both buoy and satellite significant height of waves as the "good" measure, but the way we prefer to do it is calibrating first with the satellite data and validating with the buoy after the calibration. A description of what has been done can be seen in this paper:
 
 * João Albuquerque, Jose A. A. Antolínez, Ana Rueda, Fernando J.Méndez, Giovanni Cocoa (November 2018). Directional correction of modeled sea and swell wave heights using satellite altimeter data. https://doi.org/10.1016/j.ocemod.2018.09.001
 
