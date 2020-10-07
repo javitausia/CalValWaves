@@ -59,8 +59,8 @@ After clicking donwload .txt file and checking everything is correct, you can do
 [data](./data/): Data used
 - All the data present in this folder is enough to run the python files and the jupyter notebook as a first example. If the toolbox wanna be used to calibrate and validate different data, it is compulsary to have a look in how the initial data has been preprocessed. For the hindcast and the buoy data, pandas dataframes are used, for the satellite, a netCDF file (as it is downloaded from the IMOS website)
 
-[satellite files](./data/satellie/): Satellite code files
-- These files help the user join all the sub netcdf files downloaded from the .txt initial file, so the python example script and the jupyter notebook can be run easily.
+[satellite files](./data/satellite/): Satellite code files
+- These files help the user join all the sub netcdf files downloaded from the .txt initial file, so the python example script and the jupyter notebook can be run easily
 
 ## 4. Installation
 
