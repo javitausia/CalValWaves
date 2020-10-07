@@ -66,7 +66,7 @@ After clicking donwload .txt file and checking everything is correct, you can do
 
 ### 4.1 Create an environment in conda
 
-To run the toolbox you first need to install the required Python packages in an environment. To do this we will see **Anaconda**, which can be downloaded freely [here](https://www.anaconda.com/download/). Moreover, **miniconda** is also highly recommended, which can be downloaded [here](https://www.anaconda.com/download/).
+To run the toolbox you first need to install the required Python packages in an environment. To do this we will see **Anaconda**, which can be downloaded freely [here](https://www.anaconda.com/download/). Moreover, **miniconda** is also highly recommended, which can be downloaded [here](https://docs.conda.io/en/latest/miniconda.html).
 
 Once you have installed it on your PC, open the Anaconda prompt (in Mac and Linux, open a terminal window) and use the `cd` command to go to the folder where you have cloned this repository.
 
