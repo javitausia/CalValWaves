@@ -35,14 +35,14 @@ Example data is proportioned to the user to see how the toolbox works but in cas
 
 - Hincast: Different hindcasts are open to users. In this work, we have used both CSIRO and ERA5, but we have finally decided CSIRO is the most suitable for the purpose of the global project. Both hidcasts can be downloaded online.
 
-- Satellite: IMOS satellite data has been used and it can be downloaded from the AODN (Australian Ocean Data Network) website: https://portal.aodn.org.au/. The next figure explains the steps to follow to correctly dowload the data:
+- Satellite: IMOS satellite data has been used and it can be downloaded from the AODN (Australian Ocean Data Network) website: https://portal.aodn.org.au/. The next figure explains the steps to follow to correctly dowload the data, be very careful with the option selected, as it must be the one shown in the photo below, which is "IMOS - SRS Surface Waves Sub-Facility - altimeter wave/wind" that could appear not in the first page of the website.
 
 ![](https://github.com/javitausia/CalValWaves/blob/master/data/satellite/steps.png)
 <img src="https://github.com/javitausia/CalValWaves/blob/master/data/satellite/steps.png" width="10">
 
 After clicking donwload .txt file and checking everything is correct, you can download the netCDFs files using `cd` to move to the folder where you want to store the data and then running the command `wget - i IMOS... .txt`. Finally, join the files using [join satellite](/data/satellite/extract_satellite.py).
 
-### More detailed information could be updated regarding the acquisition of the data.
+### More detailed information could be updated regarding the acquisition of the data (buoy and wave reanalysis (hindcast)).
 
 ## 3. Main contents
 
@@ -59,11 +59,14 @@ After clicking donwload .txt file and checking everything is correct, you can do
 [data](./data/): Data used
 - All the data present in this folder is enough to run the python files and the jupyter notebook as a first example. If the toolbox wanna be used to calibrate and validate different data, it is compulsary to have a look in how the initial data has been preprocessed. For the hindcast and the buoy data, pandas dataframes are used, for the satellite, a netCDF file (as it is downloaded from the IMOS website)
 
+[satellite files](./data/satellie/): Satellite code files
+- These files help the user join all the sub netcdf files downloaded from the .txt initial file, so the python example script and the jupyter notebook can be run easily.
+
 ## 4. Installation
 
 ### 4.1 Create an environment in conda
 
-To run the toolbox you first need to install the required Python packages in an environment. To do this we will see **Anaconda**, which can be downloaded freely [here](https://www.anaconda.com/download/).
+To run the toolbox you first need to install the required Python packages in an environment. To do this we will see **Anaconda**, which can be downloaded freely [here](https://www.anaconda.com/download/). Moreover, **miniconda** is also highly recommended, which can be downloaded [here](https://www.anaconda.com/download/).
 
 Once you have installed it on your PC, open the Anaconda prompt (in Mac and Linux, open a terminal window) and use the `cd` command to go to the folder where you have cloned this repository.
 
@@ -72,6 +75,7 @@ Create a new environment named `calval` with all the required packages:
 ```
 conda env create -f environment.yml -n calval
 ```
+
 ### 4.2 Activate conda environment
 
 All the required packages have been now installed in an environment called `calval`. Now, activate this new environment:
