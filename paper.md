@@ -41,27 +41,31 @@ generated waves or ground swells).
 
 # Statement of need 
 
-`Gala` is an Astropy-affiliated Python package for galactic dynamics. Python
-enables wrapping low-level languages (e.g., C) for speed without losing
-flexibility or ease-of-use in the user-interface. The API for `Gala` was
-designed to provide a class-based and user-friendly interface to fast (C or
-Cython-optimized) implementations of common operations such as gravitational
-potential and force evaluation, orbit integration, dynamical transformations,
-and chaos indicators for nonlinear dynamics. `Gala` also relies heavily on and
-interfaces well with the implementations of physical units and astronomical
-coordinate systems in the `Astropy` package [@astropy] (`astropy.units` and
-`astropy.coordinates`).
+`CalValWaves` is a Python package for wave reanalysis calibration. Python is a very
+high level language that allows the code to be easily understood and changed if
+required. All the operations have been performed using commonly known python libraries
+such us scipy, numpy and pandas. These friendly features make the usage of the
+package available to the all oceanography researchers that are not familiar with the
+python language, although use all the potential of it. 
 
-`Gala` was designed to be used by both astronomical researchers and by
-students in courses on gravitational dynamics or astronomy. It has already been
-used in a number of scientific publications [@Pearson:2017] and has also been
-used in graduate courses on Galactic dynamics to, e.g., provide interactive
-visualizations of textbook material [@Binney:2008]. The combination of speed,
-design, and support for Astropy functionality in `Gala` will enable exciting
-scientific explorations of forthcoming data releases from the *Gaia* mission
-[@gaia] by students and experts alike.
+`CalValWaves` was designed to be used by both oceanography researchers and by
+students in courses on oceanography and related studies. It was used in a master's
+thesis, which results can be seen in the main repository, as the package allows the
+creation of very useful plots for the data analtsis. The combination of speed,
+and design in `CalValWaves` enables exciting scientific explorations of wave 
+reanalysis data all over the world by students and experts alike.
 
 # Mathematics
+
+A simple linear regression is performed that takes into account the existent
+different types of waves that appear at the same moment in the wave reanalysis, 
+using all of them, which do a total of 32 coefficients (16 directions · 2 types of
+waves), to estimate the bulk significant wave height of the waves, measured by the
+satellite radars. This linear regression equation can be summarized as follows:
+
+$$
+H^{Sat2} = \sum_{i=0}^{15}a_i^2 H_i^{Sea2} + \sum_{i=0}^{15}b_i^2 H_i^{Swell2} + \epsilon^2
+$$
 
 Single dollars ($) are required for inline mathematics e.g. $f(x) = e^{\pi/x}$
 
