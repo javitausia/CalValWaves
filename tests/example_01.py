@@ -24,11 +24,6 @@ print('--------------------------------------------------------')
 # Path to the data (this is the data I used)
 p_data = op.abspath(op.join(op.dirname(__file__), '..', 'data'))
 
-# Buoy data
-buoy       =  pd.read_pickle(op.join(p_data, 'buoy', 
-                                     'Bilbao-Vizcaya Ext.pkl'))
-print(buoy.info())
-
 # Csiro data
 csiro      =  pd.read_pickle(op.join(p_data, 'hindcast', 
                                      'csiro_dataframe.pkl'))
@@ -41,15 +36,24 @@ satellite  =  xr.open_dataset(op.join(p_data, 'satellite',
                                       'satellite_dataset.nc'))
 print(satellite)
 
+# Buoy data
+buoy       =  pd.read_pickle(op.join(p_data, 'buoy', 
+                                     'Bilbao-Vizcaya Ext.pkl'))
+print(buoy.info())
+
 print('--------------------------------------------------------')
 print('Initializing the constructor...')
 print('--------------------------------------------------------')
 
-calval_case = CalVal(buoy, csiro, satellite)
+calval_case = CalVal(hindcast=csiro, 
+                     satellite=satellite,
+                     buoy=buoy, buoy_corrections=True)
+
+# if buoy data does not exist, just delte the buoy and buoy_correction
+# attributes, and then comment the methods that use the buoy information
 
 print('Time wasted initializing the constructor: ' 
       + str((time()-t0)/60) + ' m')
-
 
 calval_case.buoy_comparison('raw')
 calval_case.buoy_comparison('sat_corr')
