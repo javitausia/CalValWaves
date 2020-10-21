@@ -25,32 +25,46 @@ from .functions import rmse, bias, si, create_vec_direc, calibration_time
 
 # Calibration-validation class
 class CalVal(object):
+    """
+        This class CalVal calibrates the wave reanalysis information with
+        buoy and satellite data, although we prefer to calibrate it first
+        with satellites, so then the data can be compared and validated
+        with the buoys. Following this procedure, the calibration is always
+        performed and after this, if buoy data is available, then this new
+        wave reanalysis calibrated hindcast can be validated, but is has
+        been already calibrated
+    """
     
     
-    def __init__(self, buoy, hindcast, sat):
+    def __init__(self, hindcast, satellite, buoy=None,
+                 buoy_corrections=False):
         """ Initializes the class with all the necessary attributes that
             will be used in the different methods
             ------------
             Parameters
-            buoy: Buoy data as a dataframe
             hindcast: Hindcast data as a dataframe
-            sat: Satellite data as a netCDF (see extract_satellite.py)
+            satellite: Satellite data as a netCDF (see extract_satellite.py)
+            buoy: Buoy data as a dataframe. Information regarding the
+                  acquisition of the data could be uploaded soon in Spain
             ------------
             Returns
             Attributes initialized and plots for both calibrations, the one
-            done with the buoy and the other one performed with satellite
+            done with the satellite and the other one performed with buoy
             data. The parameters for the calibrations are also stored
         """
                 
-        self.buoy                 =    buoy
         self.hindcast             =    hindcast.copy()
         self.possible_to_correct  =    np.where(hindcast['Hs_cal'] > 0.01)[0]        
-        self.hind_to_corr         =    hindcast.iloc[self.possible_to_correct]
-        self.sat                  =    sat
+        self.hind_to_corr         =    hindcast.iloc[self.possible_to_correct].copy()
+        self.satellite            =    satellite
         self.hindcast_sat_corr    =    hindcast.copy()
-        self.params_sat_corr      =    self.calibration('sat')
-        self.hindcast_buoy_corr   =    hindcast.copy()
-        self.params_buoy_corr     =    self.calibration('buoy')
+        self.params_sat_corr      =    self.calibration('satellite')
+        if buoy_corrections:
+            self.buoy                 =    buoy
+            self.hindcast_buoy_corr   =    hindcast.copy()
+            self.params_buoy_corr     =    self.calibration('buoy')
+        else:
+            print('\n No buoy corrections will be done!! \n')
     
     
     def calibration(self, calibration_type):
@@ -59,7 +73,8 @@ class CalVal(object):
             parameters that are significantly representative
             ------------
             Parameters
-            calibration_type: (Str) Type of calibration to be done (sat, buoy)
+            calibration_type: (Str) Type of calibration to be done 
+                                  (satellite, buoy)
             ------------
             Returns
             Corrected data and calculated params
@@ -70,7 +85,7 @@ class CalVal(object):
         print('-------------------------------------------------------- \n ')
         
         # Initializes satellite data to calibrate
-        if calibration_type=='sat':
+        if calibration_type=='satellite':
             print('Satellite box values: ')
             ini_lat = float(input('South latitude: '))
             end_lat = float(input('North latitude: '))
@@ -185,7 +200,7 @@ class CalVal(object):
         index_hswell3 = np.where(self.hindcast.columns.values=='Hswell3')[0][0]
         index_hs_cal  = np.where(self.hindcast.columns.values=='Hs_cal')[0][0]
         
-        if calibration_type=='sat':
+        if calibration_type=='satellite':
             self.hindcast_sat_corr.iloc[self.possible_to_correct, index_hs] = Hs_corr
             self.hindcast_sat_corr.iloc[self.possible_to_correct, index_hsea] = Hsea_corr
             self.hindcast_sat_corr.iloc[self.possible_to_correct, index_hswell1] = Hswell1_corr
@@ -221,16 +236,16 @@ class CalVal(object):
         # SATELLITE
         print('Selecting the satellite data choosed... \n ')
         
-        self.sat = self.sat.isel(TIME=np.where(self.sat.LATITUDE.values > \
-                                               ini_lat)[0])
-        self.sat = self.sat.isel(TIME=np.where(self.sat.LATITUDE.values < \
-                                               end_lat)[0])
-        self.sat = self.sat.isel(TIME=np.where(self.sat.LONGITUDE.values > \
-                                               ini_lon)[0])
-        self.sat = self.sat.isel(TIME=np.where(self.sat.LONGITUDE.values < \
-                                               end_lon)[0])
+        self.satellite = self.satellite.isel(TIME=np.where(
+            self.satellite.LATITUDE.values > ini_lat)[0])
+        self.satellite = self.satellite.isel(TIME=np.where(
+            self.satellite.LATITUDE.values < end_lat)[0])
+        self.satellite = self.satellite.isel(TIME=np.where(
+            self.satellite.LONGITUDE.values > ini_lon)[0])
+        self.satellite = self.satellite.isel(TIME=np.where(
+            self.satellite.LONGITUDE.values < end_lon)[0])
         
-        print('Satellite length: ' + str(len(self.sat.TIME.values)) + ' \n ')
+        print('Satellite length: ' + str(len(self.satellite.TIME.values)))
         
         # HINDCAST
         print('Hindcast information able to calibrate: ' + \
@@ -238,16 +253,16 @@ class CalVal(object):
         
         # We perform the calibration
         print('Choose the way to calibrate the data: ')
-        type_calib_way = input('True: hindcast for each satellite \n' + 
-                               'False: satellite for each hindcast \n' + 
-                               '----- Select ----- : ')
+        type_calib_way = bool(input('True: hindcast for each satellite \n' + 
+                                    'False (empty box): satellite for each hindcast \n' + 
+                                    '----- Select ----- : '))
         print(' \n ')
         
         print('Performing the time calibration... \n ')
-        times_sat, times_hind = calibration_time(self.sat.TIME.values, 
+        times_sat, times_hind = calibration_time(self.satellite.TIME.values, 
                                                  self.hind_to_corr.index.values, 
                                                  sh = type_calib_way)
-        sat_times = self.sat.sel(TIME=times_sat)
+        sat_times = self.satellite.sel(TIME=times_sat)
         
         # All the necessary Satellite data (Quality)
         wave_height_qlt = np.nansum(np.concatenate((sat_times['SWH_KU_quality_control'].\
