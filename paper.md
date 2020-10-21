@@ -67,34 +67,14 @@ as the energy is what can be compared in summations, but not just the height. Wi
 simple linear regression, 32 coefficients are obtained that give an idea about what
 waves are over and underestimate by the numerical wave reanalysis.
 
-# Single dollars ($) are required for inline mathematics e.g. $f(x) = e^{\pi/x}$
-
-# Double dollars make self-standing equations:
-
-# $$\Theta(x) = \left\{\begin{array}{l}
-# 0\textrm{ if } x < 0\cr
-# 1\textrm{ else}
-# \end{array}\right.$$
-
-# You can also use plain \LaTeX for equations
-# \begin{equation}\label{eq:fourier}
-# \hat f(\omega) = \int_{-\infty}^{\infty} f(x) e^{i\omega x} dx
-# \end{equation}
-# and refer to \autoref{eq:fourier} from text.
-
 # Figures
 
 Some figures can be obtained using this tool, but the most important ones are the
-calibration of the hindcast and the validation with the buoy, all shown below in
+calibration of the hindcast and the validation with the buoy, all shown below:
 
 
 ![calibration.\label{fig:calibration}](/images/calibration-satellite.png)
 ![validation.\label{fig:validation}](/images/validation-satellite.png)
 ![comparison.label{fig:comparison}](/images/comparison-satcorr-2008.png)
-
-# Acknowledgements
-
-We acknowledge contributions from Brigitta Sipocz, Syrtis Major, and Semyeong
-Oh, and support from Kathryn Johnston during the genesis of this project.
 
 # References
