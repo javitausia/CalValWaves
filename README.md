@@ -33,31 +33,34 @@ Example data is proportioned to the user to see how the toolbox works but in cas
 
 - Buoy: This is the most relative part, as it depends on the country you are working on, for Spain, as it is our area of study, data can be requested using the goverment resources: http://www.puertos.es/es-es/oceanografia/Paginas/portus.aspx
 
-- Hincast: Different hindcasts are open to users. In this work, we have used both CSIRO and ERA5, but we have finally decided CSIRO is the most suitable for the purpose of the global project. Both hidcasts can be downloaded online.
+- Hincast: Different hindcasts are open to users. In this work, we have used both CSIRO and ERA5, but we have finally decided CSIRO is the most suitable for the purpose of the global project. Both hidcasts can be downloaded online. For the CSIRO hindcast, the user is redirected [here](data-cbr.csiro.au/thredds/ncss/grid/catch_all/CMAR_CAWCR-Wave_archive/CAWCR_Wave_Hindcast_aggregate/gridded/ww3.pac_4m.202107.nc/dataset.html).
 
 - Satellite: IMOS satellite data has been used and it can be downloaded from the AODN (Australian Ocean Data Network) website: https://portal.aodn.org.au/. The next figure explains the steps to follow to correctly dowload the data, be very careful with the option selected, as it must be the one shown in the photo below, which is "IMOS - SRS Surface Waves Sub-Facility - altimeter wave/wind" that could appear not in the first page of the website.
 
 ![](https://github.com/javitausia/CalValWaves/blob/master/data/satellite/steps.png)
 <img src="https://github.com/javitausia/CalValWaves/blob/master/data/satellite/steps.png" width="10">
 
-After clicking donwload .txt file and checking everything is correct, you can download the netCDFs files using `cd` to move to the folder where you want to store the data and then running the command `wget - i IMOS... .txt`. Finally, join the files using [join satellite](/data/satellite/extract_satellite.py).
+After clicking donwload .txt file and checking everything is correct, you can download the netCDFs files using `cd` to move to the folder where you want to store the data and then running the command `wget - i IMOS... .txt`. Finally, join the files using [concat_satellite_files.py](/data/satellite/concat_satellite_files.py). Another option is to download the netCDF files directly from the IMOS website, then, as before, copy and paste the downloaded folder in `data/satellite` and concat the files!!
 
 ### More detailed information could be updated regarding the acquisition of the data (buoy and wave reanalysis (hindcast)).
 
 ## 3. Main contents
 
-[lib](./lib/): Python basic files 
-- [calval](./lib/calval.py): Autocontent class with calibration and validation tools
-- [functions](./lib/functions.py): Useful functions used
+[calval](./calval/): Python basic files 
+- [calval-py](./calval/calval.py): Autocontent class with calibration and validation tools
+- [functions](./calval/functions.py): Useful functions used
 
-[test](./tests/): Test examples
-- [python example](./tests/example_01.py): Example of how to use the library
+[tests](./scripts/): Test examples
+- [python example](./scripts/example_01.py): Example of how to use the library
 
 [images](./images/): Image examples
 - All the images in this folder can be obtained using the python example. It is not necessary to explain what each image contains as they are self-explicative
 
 [data](./data/): Data used
 - All the data present in this folder is enough to run the python files and the jupyter notebook as a first example. If the toolbox wanna be used to calibrate and validate different data, it is compulsary to have a look in how the initial data has been preprocessed. For the hindcast and the buoy data, pandas dataframes are used, for the satellite, a netCDF file (as it is downloaded from the IMOS website)
+
+[hindcast files](./data/hindcast/): Hindcast code files
+- These files help the user preprocess the netcdf hindcast file downloaded from csiro website, so the python example script and the jupyter notebook can be run easily
 
 [satellite files](./data/satellite/): Satellite code files
 - These files help the user join all the sub netcdf files downloaded from the .txt initial file, so the python example script and the jupyter notebook can be run easily
@@ -90,7 +93,7 @@ Now everything has been installed, you can now start to play with the python cod
 
 ## Additional support:
 
-Data used in the project and a detailed explanation of the acquisition can be requested from jtausiahoyal@gmail.com.
+Data used in the project and a detailed explanation of the acquisition can be requested from jtausiahoyal@gmail.com or tausiaj@unican.es.
 
 ## Author:
 
