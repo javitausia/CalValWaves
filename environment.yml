@@ -1,18 +1,17 @@
+name: calval
 channels:
-        - defaults
-        - conda-forge
+  - defaults
+  - conda-forge
 dependencies:
-        - python
-        - numpy
-        - pandas
-        - xarray
-        - netcdf4
-        - matplotlib
-        - scikit-learn
-        - scipy
-        - statsmodels
-        - cmocean
-        - basemap
-        - basemap-data-hires
-        - spyder
-        - notebook
+  - python
+  - numpy
+  - pandas
+  - xarray
+  - netcdf4
+  - matplotlib
+  - scikit-learn
+  - scipy
+  - statsmodels
+  - cmocean
+  - notebook
+  - cartopy
