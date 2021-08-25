@@ -6,6 +6,7 @@ import pandas as pd
 import matplotlib as mpl
 from matplotlib import pyplot as plt
 import cartopy.crs as ccrs
+import cartopy.feature as cfeature
 import cmocean
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
@@ -60,11 +61,17 @@ class CalVal(object):
             data. The parameters for the calibrations are also stored
         """
         
+        print('\n Plotting region to be working with!! \n')
+        
         # plot data domains for hindcast, satellite and buoy
         fig, ax = plt.subplots(figsize=(10,10),subplot_kw={
             'projection': ccrs.PlateCarree(central_longitude=hindcast_longitude-360)
         })
-        ax.scatter(satellite.LONGITUDE,satellite.LATITUDE,s=1,c='k',
+        land_10m = cfeature.NaturalEarthFeature(
+            'physical', 'land', '10m', edgecolor='face',
+            facecolor=cfeature.COLORS['land']
+        ) # add land to image
+        ax.scatter(satellite.LONGITUDE,satellite.LATITUDE,s=0.01,c='k',
                    transform=ccrs.PlateCarree())
         ax.scatter(hindcast_longitude,hindcast_latitude,
                    s=50,c='red',zorder=10,
@@ -78,7 +85,18 @@ class CalVal(object):
              hindcast_latitude-2,hindcast_latitude+2]
         )
         ax.stock_img()
+        ax.add_feature(land_10m)
         plt.show() # TODO: add better plotting!!
+        # TODO: add labels
+        # gl = ax.gridlines(crs=ccrs.PlateCarree(),draw_labels=True,
+        #                   linewidth=2,color='gray',linestyle='--')
+        # xlabels = np.arange(plot_region[1][0],plot_region[1][1],plot_labels[1])
+        # xlabels = np.where(xlabels<180,xlabels,xlabels-360)
+        # ylabels = np.arange(plot_region[1][3],plot_region[1][2],plot_labels[2])
+        # gl.xlocator = mticker.FixedLocator(list(xlabels))
+        # gl.ylocator = mticker.FixedLocator(list(ylabels))  
+        # gl.xlabels_top = False
+        # gl.ylabels_right = False
         
         # save all datasets and variables in class        
         self.hindcast             =    hindcast.copy()
