@@ -76,7 +76,7 @@ Once you have installed it on your PC, open the Anaconda prompt (in Mac and Linu
 Create a new environment named `calval` with all the required packages:
 
 ```
-conda env create -f environment.yml -n calval
+conda env create -f environment.yml
 ```
 
 ### 4.2 Activate conda environment
