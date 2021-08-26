@@ -12,7 +12,7 @@ CalValWaves is an open-source software toolkit written in python that enables th
 
 Numerical reanalysis are very useful as they have information of different variables for a very long and constant period of time. In this case, this data will be used after been calibrated to propagate waves from the point where the node of the reanalysis is located to shallow waters, and it is very important to have constant data along a very large period of time, so the propagations can be representative. The problem now is that these hindcasts are not perfect, and this is why we must calibrate them first with satellite data and validate them after all with a nerby buoy to see if data correlates.
 
-The area of study is the north of Spain (an explanation map can be seen below).
+The initial area of study is the north of Spain (an explanation map can be seen below) although more locations might be added.
 
 ![map](/images/mapa-resumen.png)
 
@@ -22,8 +22,6 @@ In this map, the node of reanalysis is shown with a red mark, the different sate
 
 For the validation, two figures will be shown. The first compares historically the performance of the buoy and the hindcast, once the significant wave height has been corrected with the satellite, the second one shows different representative characteristics of both buoy and hindcast data:
 
-![comparison1](/images/comparison-satcorr-2006.png)
-![comparison2](/images/comparison-satcorr-2007.png)
 ![comparison3](/images/comparison-satcorr-2008.png)
 ![validation](/images/validation-satellite.png)
 
@@ -53,11 +51,15 @@ After clicking donwload .txt file and checking everything is correct, you can do
 [tests](./scripts/): Test examples
 - [python example](./scripts/example_01.py): Example of how to use the library
 
+[notebooks](./notebooks/): Notebook examples
+- [cantabria example](./notebooks/example_jupyter_can.ipynb): Example of CalValWaves in in the north of Spain
+- [oahu example](./notebooks/example_jupyter_oahu.ipynb): Example of CalValWaves in in the north of Oahu (Hawaii)
+
 [images](./images/): Image examples
 - All the images in this folder can be obtained using the python example. It is not necessary to explain what each image contains as they are self-explicative
 
 [data](./data/): Data used
-- All the data present in this folder is enough to run the python files and the jupyter notebook as a first example. If the toolbox wanna be used to calibrate and validate different data, it is compulsary to have a look in how the initial data has been preprocessed. For the hindcast and the buoy data, pandas dataframes are used, for the satellite, a netCDF file (as it is downloaded from the IMOS website)
+- All the data present in this folder is enough to run the python files and the jupyter notebook as a first example. If the toolbox wanna be used to calibrate and validate different data, it is compulsary to have a look in how the initial data has been preprocessed. For the hindcast and the buoy data, pandas dataframes / netcdf datasets are used, for the satellite, a netCDF file (as it is downloaded from the IMOS website)
 
 [hindcast files](./data/hindcast/): Hindcast code files
 - These files help the user preprocess the netcdf hindcast file downloaded from csiro website, so the python example script and the jupyter notebook can be run easily
@@ -90,6 +92,10 @@ conda activate calval
 ## 5. Play
 
 Now everything has been installed, you can now start to play with the python code and the jupyter notebook explanation. Be careful, as some important parameters can be adjusted during the calibration process (construction of the object of the class, first line code in the jupyter notebook). Nevertheless, parameters used are also shown in the example.
+
+Areas available to play are:
+
+![areasplay](/images/areasplay.png)
 
 ## Additional support:
 
