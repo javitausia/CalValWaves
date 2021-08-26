@@ -5,9 +5,34 @@ import xarray as xr
 
 print('Creating and saving the dataframe...')
 
-csiro_dataset = xr.open_dataset('csiro_dataset_oahu.nc')
+csiro_dataset = xr.open_dataset('gridded_area_oahu.nc')
 
-csiro_sel = csiro_dataset.isel(latitude=0,longitude=0)
+csiro_sel = csiro_dataset.isel(latitude=3,longitude=1)
+csiro_attrs = csiro_sel.attrs # save attributes
+
+csiro_sel = xr.merge([
+    csiro_sel.hs, csiro_sel.t, csiro_sel.t02, csiro_sel.fp, 
+    csiro_sel.dir, csiro_sel.dp, csiro_sel.spr, csiro_sel.pnr,
+    xr.concat([csiro_sel.U10,csiro_sel.uwnd],dim='time').dropna(dim='time'),
+    xr.concat([csiro_sel.V10,csiro_sel.vwnd],dim='time').dropna(dim='time'),
+    xr.concat([csiro_sel.hs0,csiro_sel.phs0],dim='time').dropna(dim='time'),
+    xr.concat([csiro_sel.hs1,csiro_sel.phs1],dim='time').dropna(dim='time'),
+    xr.concat([csiro_sel.hs2,csiro_sel.phs2],dim='time').dropna(dim='time'),
+    xr.concat([csiro_sel.hs3,csiro_sel.phs3],dim='time').dropna(dim='time'),
+    xr.concat([csiro_sel.tp0,csiro_sel.ptp0],dim='time').dropna(dim='time'),
+    xr.concat([csiro_sel.tp1,csiro_sel.ptp1],dim='time').dropna(dim='time'),
+    xr.concat([csiro_sel.tp2,csiro_sel.ptp2],dim='time').dropna(dim='time'),
+    xr.concat([csiro_sel.tp3,csiro_sel.ptp3],dim='time').dropna(dim='time'),
+    xr.concat([csiro_sel.th0,csiro_sel.pdir0],dim='time').dropna(dim='time'),
+    xr.concat([csiro_sel.th1,csiro_sel.pdir1],dim='time').dropna(dim='time'),
+    xr.concat([csiro_sel.th2,csiro_sel.pdir2],dim='time').dropna(dim='time'),
+    xr.concat([csiro_sel.th3,csiro_sel.pdir3],dim='time').dropna(dim='time'),
+    xr.concat([csiro_sel.si0,csiro_sel.pspr0],dim='time').dropna(dim='time'),
+    xr.concat([csiro_sel.si1,csiro_sel.pspr1],dim='time').dropna(dim='time'),
+    xr.concat([csiro_sel.si2,csiro_sel.pspr2],dim='time').dropna(dim='time'),
+    xr.concat([csiro_sel.si3,csiro_sel.pspr3],dim='time').dropna(dim='time'),
+])
+csiro_sel.attrs = csiro_attrs
 
 csiro = pd.DataFrame({'Hs':         csiro_sel.hs.values,
                       'Tm_01':      csiro_sel.t.values,
@@ -87,7 +112,7 @@ DIRW[np.where(DIRW>360)[0]] = DIRW[np.where(DIRW>360)[0]] - 360
 csiro.insert(10, 'W', WIND)
 csiro.insert(11, 'DirW', DIRW)
 
-csiro.to_pickle('csiro_dataframe_tonga.pkl')
-csiro.to_xarray().to_netcdf('csiro_dataset_tonga.nc')
+csiro.to_pickle('csiro_dataframe_oahu.pkl')
+csiro.to_xarray().assign_attrs(csiro_attrs).to_netcdf('csiro_dataset_oahu.nc')
 
 
