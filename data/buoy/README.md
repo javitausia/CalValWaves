@@ -4,7 +4,7 @@ The ground truth data ([buoys](https://en.wikipedia.org/wiki/Buoy)) is saved her
 
 * [bilbao-offshore-buoy](http://www.puertos.es/es-es/oceanografia/Paginas/portus.aspx): This is the `bilbao_offshore_buoy.nc` file, which contains the information of a spectral buoy located in the north of Spain. Website: [Puertos del Estado (Spanish government)](http://www.puertos.es/es-es/oceanografia/Paginas/portus.aspx).
 
-* [oahu-nearshore-buoy](https://www.ndbc.noaa.gov/): This is the `oahu_nearshore_buoy.nc` file, which contains information of a buoy located in the north shore of Oahu, where very famous surfing spots are located. Website: [NOAA](https://www.ndbc.noaa.gov/).
+* [waimea-nearshore-buoy](https://www.ndbc.noaa.gov/): This is the `waimeabay_nearshore_buoy.nc` file, which contains information of a buoy located in the north shore of Oahu, where very famous surfing spots are located. Website: [NOAA](https://www.ndbc.noaa.gov/).
 
 Variable names might differ, so be careful when loading the datasets and performing all the calibration and validation analysis, as the code might push some errors.
 
