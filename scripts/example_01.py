@@ -26,28 +26,33 @@ p_data = op.abspath(op.join(op.dirname(__file__), '..', 'data'))
 
 # Csiro data
 csiro      =  pd.read_pickle(op.join(p_data, 'hindcast', 
-                                     'csiro_dataframe.pkl'))
+                                     'csiro_dataframe_can.pkl'))
 print(csiro.info())
 
 # Satellite data, see extract_csiro.py
 # An example for satellite boundary box is:
 # 43.8, 44.2, 356.2, 356.6
 satellite  =  xr.open_dataset(op.join(p_data, 'satellite', 
-                                      'satellite_dataset.nc'))
+                                      'satellite_dataset_can.nc'))
 print(satellite)
 
 # Buoy data
-buoy       =  pd.read_pickle(op.join(p_data, 'buoy', 
-                                     'Bilbao-Vizcaya Ext.pkl'))
-print(buoy.info())
+buoy       =  xr.open_dataset(op.join(p_data, 'buoy', 
+                                      'bilbao_offshore_buoy.pkl'))
+print(buoy)
 
 print('--------------------------------------------------------')
 print('Initializing the constructor...')
 print('--------------------------------------------------------')
 
-calval_case = CalVal(hindcast=csiro, 
-                     satellite=satellite,
-                     buoy=buoy, buoy_corrections=True)
+calval_case = calval.CalVal(hindcast=csiro, 
+                            hindcast_longitude=csiro_lon,
+                            hindcast_latitude=csiro_lat,
+                            satellite=satellite,
+                            buoy=(True,buoy.to_dataframe()),
+                            buoy_longitude=buoy.longitude,
+                            buoy_latitude=buoy.latitude,
+                            buoy_corrections=False)
 
 # if buoy data does not exist, just delte the buoy and buoy_correction
 # attributes, and then comment the methods that use the buoy information
@@ -70,3 +75,5 @@ calval_case.hindcast_sat_corr.to_pickle(op.join(p_data, 'hindcast',
                                         'csiro_dataframe_sat_corr.pkl'))
 calval_case.hindcast_buoy_corr.to_pickle(op.join(p_data, 'hindcast',
                                          'csiro_dataframe_buoy_corr.pkl'))
+                                         
+
