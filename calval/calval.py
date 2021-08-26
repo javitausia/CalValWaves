@@ -517,7 +517,7 @@ class CalVal(object):
             fig, axs = plt.subplots(3, 1, figsize=(20,15), sharex=True)
             fig.subplots_adjust(hspace=0.05, wspace=0.1)
             fig.suptitle('Year: ' + str(year) + 
-                         ', Bilbao-Vizcaya Ext buoy validation with ' + 
+                         ', Waimea Bay nearshore buoy comparison with ' + 
                          comparison_type.upper()+ ' CSIRO', 
                          fontsize=24, y=0.94, fontweight='bold')
             months = ['                        Jan', 
@@ -583,10 +583,10 @@ class CalVal(object):
             title = 'No previous correction'
         elif validation_type=='sat_corr':
             validation = pd.concat([self.buoy, self.hindcast_sat_corr], axis=1)
-            title = 'Previosly corrected with buoy data'
+            title = 'Previosly corrected with satellite data'
         elif validation_type=='buoy_corr':
             validation = pd.concat([self.buoy, self.hindcast_buoy_corr], axis=1)
-            title = 'Previosly corrected with satellite data'
+            title = 'Previosly corrected with buoy data'
         else:
             return 'Not a valid value for validation_type'
         
@@ -604,7 +604,7 @@ class CalVal(object):
         fig, axs = plt.subplots(2, 3, figsize=(20,20))
         fig.subplots_adjust(hspace=0.2, wspace=0.2)
         fig.suptitle('Hindcast: CSIRO' + 
-                     ', Bilbao-Vizcaya Ext buoy validation \n ' +title, 
+                     ', Waimea Bay nearshore buoy validation \n ' +title, 
                      fontsize=24, y=0.98, fontweight='bold')
         
         for i in range(2):
@@ -715,5 +715,4 @@ class CalVal(object):
         # show results
         plt.show()
         
-
 
