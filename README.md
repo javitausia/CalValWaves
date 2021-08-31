@@ -35,8 +35,7 @@ Example data is proportioned to the user to see how the toolbox works but in cas
 
 - Satellite: IMOS satellite data has been used and it can be downloaded from the AODN (Australian Ocean Data Network) website: https://portal.aodn.org.au/. The next figure explains the steps to follow to correctly dowload the data, be very careful with the option selected, as it must be the one shown in the photo below, which is "IMOS - SRS Surface Waves Sub-Facility - altimeter wave/wind" that could appear not in the first page of the website.
 
-![](https://github.com/javitausia/CalValWaves/blob/master/data/satellite/steps.png)
-<img src="https://github.com/javitausia/CalValWaves/blob/master/data/satellite/steps.png" width="10">
+![satellite-steps](/data/satellite/steps.png)
 
 After clicking donwload .txt file and checking everything is correct, you can download the netCDFs files using `cd` to move to the folder where you want to store the data and then running the command `wget - i IMOS... .txt`. Finally, join the files using [concat_satellite_files.py](/data/satellite/concat_satellite_files.py). Another option is to download the netCDF files directly from the IMOS website, then, as before, copy and paste the downloaded folder in `data/satellite` and concat the files!!
 
