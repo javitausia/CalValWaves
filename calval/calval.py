@@ -5,6 +5,7 @@ import pandas as pd
 # plotting
 import matplotlib as mpl
 from matplotlib import pyplot as plt
+from mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import cmocean
@@ -26,7 +27,7 @@ from .functions import rmse, bias, si, create_vec_direc, calibration_time
 
 
 # +
-# Calibration-validation class
+# Calibration-Validation class
 class CalVal(object):
     """
         This class CalVal calibrates the wave reanalysis information with
@@ -39,7 +40,7 @@ class CalVal(object):
     """
     
     
-    def __init__(self, hindcast, satellite, buoy=(False,None),
+    def __init__(self, hindcast, n_parts, satellite, buoy=(False,None),
                  buoy_corrections=False,
                  hindcast_longitude=180.0,
                  hindcast_latitude=0.0,
@@ -100,6 +101,7 @@ class CalVal(object):
         
         # save all datasets and variables in class        
         self.hindcast             =    hindcast.copy()
+        self.n_parts              =    n_parts
         self.hindcast_longitude   =    hindcast_longitude
         self.hindcast_latitude    =    hindcast_latitude
         self.possible_to_correct  =    np.where(hindcast['Hs_cal'] > 0.01)[0]        
@@ -140,8 +142,8 @@ class CalVal(object):
             print('Satellite box values: ')
             ini_lat = float(input('South latitude: '))
             end_lat = float(input('North latitude: '))
-            ini_lon = float(input('West latitude: '))
-            end_lon = float(input('East latitude: '))
+            ini_lon = float(input('West longitude: '))
+            end_lon = float(input('East longitude: '))
             print(' \n ')
             hs_calibrate, calibration = self.satellite_values(ini_lat=ini_lat, 
                                                               end_lat=end_lat,
@@ -165,24 +167,25 @@ class CalVal(object):
         print('This might take a few minutes... \n')
         
         print('Sea... \n')
-        Hsea    = create_vec_direc(calibration['Hsea'], \
-                                   calibration['Dirsea'])
+        Hsea = create_vec_direc(calibration['Hsea'],
+                                calibration['Dirsea'])
         print('\n')
+
         print('Swells 1, 2, 3... \n')
-        Hswell1 = create_vec_direc(calibration['Hswell1'], \
-                                   calibration['Dirswell1'])
-        Hswell2 = create_vec_direc(calibration['Hswell2'], \
-                                   calibration['Dirswell2'])
-        Hswell3 = create_vec_direc(calibration['Hswell3'], \
-                                   calibration['Dirswell3'])
-        Hs_ncorr_mat = np.concatenate([Hsea**2, Hswell1**2 + \
-                                       Hswell2**2 + Hswell3**2], 
-                                      axis=1)
+        Hs_swells = np.zeros(Hsea.shape)
+        for part in np.arange(1, self.n_parts):
+            Hs_swells += (create_vec_direc(calibration['Hswell'+str(part)],
+                                           calibration['Dirswell'+str(part)])
+                         )**2
+
+        # concatenate seas and swells    
+        Hs_ncorr_mat = np.concatenate([Hsea**2, Hs_swells], axis=1)
+        
         Hs_ncorr = np.sqrt(np.sum(Hs_ncorr_mat, axis=1))
         #---------------------------------------------------------------------#
         print('\n')
-        print('Value to set the umbral for not enough data to calibrate, ')
-        print('this value can be from 0.01 to 0.03: ' )
+        print('Threshold of minimum Hs to calibrate')
+        print('Directional families with a mean Hs under this threshold will not be calibrated: ' )
         th_ne = float(input('----- Threshold ----- : '))
         print(' \n ')
         #---------------------------------------------------------------------#
@@ -220,55 +223,57 @@ class CalVal(object):
         print('Saving corrected results... \n ')
         print('This might take more than a few minutes... \n')
         
-        print('Sea... \n')
-        Hsea    = create_vec_direc(self.hind_to_corr['Hsea'], \
-                                   self.hind_to_corr['Dirsea'])
-        print('\n')
-        print('Swells 1, 2, 3... \n')
-        Hswell1 = create_vec_direc(self.hind_to_corr['Hswell1'], \
-                                   self.hind_to_corr['Dirswell1'])
-        Hswell2 = create_vec_direc(self.hind_to_corr['Hswell2'], \
-                                   self.hind_to_corr['Dirswell2'])
-        Hswell3 = create_vec_direc(self.hind_to_corr['Hswell3'], \
-                                   self.hind_to_corr['Dirswell3'])
-        Hsea_corr_mat    = paramss[:,0:16]  * Hsea**2
-        Hswell1_corr_mat = paramss[:,16:32] * Hswell1**2
-        Hswell2_corr_mat = paramss[:,16:32] * Hswell2**2
-        Hswell3_corr_mat = paramss[:,16:32] * Hswell3**2
-        Hsea_corr        = np.sqrt(np.sum(Hsea_corr_mat, axis=1))
-        Hswell1_corr     = np.sqrt(np.sum(Hswell1_corr_mat, axis=1))
-        Hswell2_corr     = np.sqrt(np.sum(Hswell2_corr_mat, axis=1))
-        Hswell3_corr     = np.sqrt(np.sum(Hswell3_corr_mat, axis=1))
-        Hs_ncorr_mat     = np.concatenate([Hsea**2, Hswell1**2 + Hswell2**2 + \
-                                           Hswell3**2], axis=1)
+        for part in np.arange(0, self.n_parts):
+            if part==0:
+                print('Sea... \n')
+                Hsea    = create_vec_direc(self.hind_to_corr['Hsea'],
+                                           self.hind_to_corr['Dirsea'])
+                Hsea_corr_mat  = paramss[:,0:16]  * Hsea**2
+                Hsea_corr      = np.sqrt(np.sum(Hsea_corr_mat, axis=1))
+                Hs_ncorr_sea   = Hsea**2
+                index_hsea     = np.where(self.hindcast.columns.values=='Hsea')[0][0]
+                print('\n')
+            else:
+                print('Swell:' + str(part) + '\n')
+                globals()['Hswell%s' % part] = create_vec_direc(
+                    self.hind_to_corr['Hswell'+str(part)],self.hind_to_corr['Dirswell'+str(part)])
+                globals()['Hswell%s_corr_mat' % part] = paramss[:, 16:32] * globals()['Hswell'+str(part)]**2
+                globals()['Hswell%s_corr' % part] = np.sqrt(np.sum(globals()['Hswell%s_corr_mat' % part], axis=1))
+                # globals()['index_hswell%s' % part] = np.where(self.hindcast.columns.values==globals()['Hswell%s' % part])[0][0]
+                globals()['index_hswell%s' % part] = np.where(self.hindcast.columns.values==['Hswell'+str(part)])[0][0]
+                if part==1:
+                    Hs_ncorr_swell = globals()['Hswell%s' % part]**2
+                else:
+                    Hs_ncorr_swell = Hs_ncorr_swell + globals()['Hswell%s' % part]**2
+        print(np.shape(Hs_ncorr_sea))
+        print(np.shape(Hs_ncorr_swell))
+        
+        Hs_ncorr_mat = np.concatenate((Hs_ncorr_sea, Hs_ncorr_swell), axis=1)
         Hs_ncorr         = np.sqrt(np.sum(Hs_ncorr_mat, axis=1))
         Hs_corr_mat      = paramss * Hs_ncorr_mat
         Hs_corr          = np.sqrt(np.sum(Hs_corr_mat, axis=1))
         index_hs      = np.where(self.hindcast.columns.values=='Hs')[0][0]
-        index_hsea    = np.where(self.hindcast.columns.values=='Hsea')[0][0]
-        index_hswell1 = np.where(self.hindcast.columns.values=='Hswell1')[0][0]
-        index_hswell2 = np.where(self.hindcast.columns.values=='Hswell2')[0][0]
-        index_hswell3 = np.where(self.hindcast.columns.values=='Hswell3')[0][0]
         index_hs_cal  = np.where(self.hindcast.columns.values=='Hs_cal')[0][0]
         
         if calibration_type=='satellite':
             self.hindcast_sat_corr.iloc[self.possible_to_correct, index_hs] = Hs_corr
             self.hindcast_sat_corr.iloc[self.possible_to_correct, index_hsea] = Hsea_corr
-            self.hindcast_sat_corr.iloc[self.possible_to_correct, index_hswell1] = Hswell1_corr
-            self.hindcast_sat_corr.iloc[self.possible_to_correct, index_hswell2] = Hswell2_corr
-            self.hindcast_sat_corr.iloc[self.possible_to_correct, index_hswell3] = Hswell3_corr
+            
+            for part in np.arange(1, self.n_parts):
+                self.hindcast_sat_corr.iloc[self.possible_to_correct, globals()['index_hswell%s' % part]] = globals()['Hswell%s_corr' % part]               
+       
             self.hindcast_sat_corr.iloc[self.possible_to_correct, index_hs_cal] = Hs_corr
+        
         else:
             self.hindcast_buoy_corr.iloc[self.possible_to_correct, index_hs] = Hs_corr
             self.hindcast_buoy_corr.iloc[self.possible_to_correct, index_hsea] = Hsea_corr
-            self.hindcast_buoy_corr.iloc[self.possible_to_correct, index_hswell1] = Hswell1_corr
-            self.hindcast_buoy_corr.iloc[self.possible_to_correct, index_hswell2] = Hswell2_corr
-            self.hindcast_buoy_corr.iloc[self.possible_to_correct, index_hswell3] = Hswell3_corr
+            for part in np.arange(1, self.n_parts):
+                self.hindcast_buoy_corr.iloc[self.possible_to_correct, globals()['index_hswell%s' % part]] = globals()['Hswell%s_corr' % part] 
             self.hindcast_buoy_corr.iloc[self.possible_to_correct, index_hs_cal] = Hs_corr
         print(' \n  \n ')
         
         # return
-        return params
+        return(params)
     
     
     def satellite_values(self, ini_lat, end_lat, ini_lon, end_lon):
@@ -338,6 +343,55 @@ class CalVal(object):
         
         return wave_height_cal, calibration
     
+    def density_scatter(self, x, y):
+        xy = np.vstack([x, y])
+        z = gaussian_kde(xy)(xy) 
+        idx = z.argsort()                                                  
+        x1, y1, z = x[idx], y[idx], z[idx]
+        
+        return(x1, y1, z)
+    
+    def validation_scatter(self, axs, x, y, xlabel, ylabel, title):
+        
+        x2, y2, z = self.density_scatter(x, y)
+        
+        # plot
+        axs.scatter(x2, y2, c=z, s=5, cmap='rainbow')
+        
+        # labels
+        axs.set_xlabel(xlabel)
+        axs.set_ylabel(ylabel) 
+        axs.set_title(title) 
+
+        # axis limits
+        maxt = np.ceil(max(max(x)+0.1, max(y)+0.1))
+        axs.set_xlim(0, maxt)
+        axs.set_ylim(0, maxt)
+        axs.plot([0, maxt], [0, maxt], '-r')
+        axs.set_xticks(np.linspace(0, maxt, 5)) 
+        axs.set_yticks(np.linspace(0, maxt, 5))
+        axs.set_aspect('equal')
+        
+        # qq-plot
+        xq = stats.probplot(x, dist="norm")
+        yq = stats.probplot(y, dist="norm")
+        axs.plot(xq[0][1], yq[0][1], "o", markersize=0.5, 
+                      color='k', label='Q-Q plot')
+        
+        # diagnostic errors
+        props = dict(boxstyle='round', facecolor='w', edgecolor='grey', linewidth=0.8, alpha=0.5)
+        mse = mean_squared_error(x2, y2)
+        rmse_e = rmse(x2, y2)
+        BIAS = bias(x2, y2)
+        SI = si(x2, y2)
+        label = '\n'.join((
+                r'RMSE = %.2f' % (rmse_e, ),
+                r'mse =  %.2f' % (mse,  ),
+                r'BIAS = %.2f' % (BIAS,  ),
+                R'SI = %.2f' % (SI,  )))
+        axs.text(0.05, 0.95, label, transform=axs.transAxes, fontsize=9,
+        verticalalignment='top', bbox=props)
+                    
     
     def calibration_plots(self, xx1, xx2, hs, data, coefs, big_title):
         """ Plots differnet graphs for the calibration of hindcast data with
@@ -356,54 +410,25 @@ class CalVal(object):
         """
         
         num='1'
-        fig, axs = plt.subplots(2, 3, figsize=(20,20))
-        fig.subplots_adjust(hspace=0.2, wspace=0.2)
+        
+        
+        fig, axs = plt.subplots(2, 3, figsize=(15,8), constrained_layout=True)
+        fig.subplots_adjust(hspace=0.4, wspace=0.1)
         fig.suptitle('CSIRO hindcast calibration with ' + 
-                     big_title + ' data', 
-                     fontsize=24, y=0.98, fontweight='bold')
+                     big_title + ' data', y=0.99,
+                     fontsize=12, fontweight='bold') 
+                    
         for i in range(2):
             for j in range(3):
                 if (i==j==0 or i==1 and j==0):
                     if i==0:
                         x, y = hs, xx1
-                        title = 'No corrected, $H_S$ [m]'
+                        title = 'Not corrected, $H_{s}$ (m)'                        
                     else:
                         x, y = hs, xx2
-                        title = 'Corrected, $H_S$ [m]'
+                        title = 'Corrected, $H_{s}$ (m)'
                         
-                    xy = np.vstack([x, y])
-                    z = gaussian_kde(xy)(xy) 
-                    idx = z.argsort()                                                  
-                    x2, y2, z = x[idx], y[idx], z[idx]
-                    axs[i,j].scatter(x2, y2, c=z, s=1, cmap=cmocean.cm.haline)
-                    axs[i,j].set_xlabel(big_title, fontsize=12, 
-                                        fontweight='bold')
-                    axs[i,j].set_ylabel('Hindcast', fontsize=12, 
-                                        fontweight='bold')
-                    axs[i,j].set_title(title, fontsize=12, 
-                                       fontweight='bold')
-                    maxt = np.ceil(max(max(x)+0.1, max(y)+0.1))
-                    axs[i,j].set_xlim(0, maxt)
-                    axs[i,j].set_ylim(0, maxt)
-                    axs[i,j].plot([0, maxt], [0, maxt], '-k', linewidth=0.6)
-                    axs[i,j].set_xticks(np.linspace(0, maxt, 5)) 
-                    axs[i,j].set_yticks(np.linspace(0, maxt, 5))
-                    axs[i,j].set_aspect('equal')
-                    xq = stats.probplot(x2, dist="norm")
-                    yq = stats.probplot(y2, dist="norm")
-                    axs[i,j].plot(xq[0][1], yq[0][1], "o", markersize=1, 
-                                  color='k', label='Q-Q plot')
-                    mse = mean_squared_error(x2, y2)
-                    rmse_e = rmse(x2, y2)
-                    BIAS = bias(x2, y2)
-                    SI = si(x2, y2)
-                    label = '\n'.join((
-                            r'RMSE = %.2f' % (rmse_e, ),
-                            r'mse =  %.2f' % (mse,  ),
-                            r'BIAS = %.2f' % (BIAS,  ),
-                            R'SI = %.2f' % (SI,  )))
-                    axs[i,j].text(0.7, 0.05, label, 
-                                  transform=axs[i,j].transAxes)
+                    self.validation_scatter(axs[i,j], x, y, big_title, 'Hindcast', title)
                     
                 elif (i==0 and j==1 or i==0 and j==2):
                     if j==1:
@@ -413,7 +438,7 @@ class CalVal(object):
                         x, y = dataj1['Dirsea'], \
                                dataj1['Hsea']
                         index = 2
-                        title = 'Sea'
+                        title = 'SEA $Wave$ $Climate$'
                     else:
                         dataj2 = data[['Dirswell'+num, \
                                        'Hswell'+num]].\
@@ -421,52 +446,48 @@ class CalVal(object):
                         x, y = dataj2['Dirswell'+num], \
                                dataj2['Hswell'+num]
                         index = 3
-                        title = 'Swell '+num
+                        title = 'SWELL {0} $Wave$ $Climate$'.format(num)
                         
                     x = (x*np.pi)/180
                     axs[i,j].axis('off')
                     axs[i,j] = fig.add_subplot(2, 3, index, projection='polar')
-                    xy = np.vstack([x, y])
-                    z = gaussian_kde(xy)(xy) 
-                    idx = z.argsort()                                                  
-                    x2, y2, z = x[idx], y[idx], z[idx]
-                    axs[i,j].scatter(x2, y2, c=z, s=3, cmap='Blues_r')
+                    x2, y2, z = self.density_scatter(x, y)
+                    axs[i,j].scatter(x2, y2, c=z, s=3, cmap='jet')
                     axs[i,j].set_theta_zero_location('N', offset=0)
                     axs[i,j].set_xticklabels(['N', 'NE', 'E','SE', 
                                               'S', 'SW', 'W', 'NW'])
+                    axs[i,j].xaxis.grid(True, color='lavender',linestyle='-')
+                    axs[i,j].yaxis.grid(True, color='lavender',linestyle='-')
+                    #axs[i,j].xaxis.set_tick_params(labelsize=20)
                     axs[i,j].set_theta_direction(-1)
-                    axs[i,j].set_xlabel('$\u03B8_{m}$ [$\degree$]', fontsize=12, 
-                                        fontweight='bold')
-                    axs[i,j].set_ylabel('$H_S$ [m]', labelpad=20, fontsize=12, 
-                                        fontweight='bold')
-                    axs[i,j].set_title(title, pad=15, fontsize=12, 
-                                       fontweight='bold')
+                    axs[i,j].set_xlabel('$\u03B8_{m}$ ($\degree$)')
+                    axs[i,j].set_ylabel('$H_{s}$ (m)', labelpad=20) 
+                    axs[i,j].set_title(title, pad=15, fontweight='bold')
                     
                 else:
                     if (j==1):
                         color_vals = coefs[0:16]
-                        title = 'Sea'
+                        title = 'SEA $Correction$'
                     else:
                         color_vals = coefs[16:32]
-                        title = 'Swell'
-                    #if np.max(abs(coefs))>1.5:
-                    #    norm = 1
-                    #else:
-                    #    norm = np.max(coefs)-1
+                        title = 'SWELL 1 $Correction$'
+
                     norm = 0.3
                     fracs = np.repeat(10, 16)
                     my_norm = mpl.colors.Normalize(1-norm, 1+norm)
                     my_cmap = mpl.cm.get_cmap('bwr', len(color_vals))
                     axs[i,j].pie(fracs, labels=None, 
                                  colors=my_cmap(my_norm(color_vals)), 
-                                 startangle=90, counterclock=False)
-                    axs[i,j].set_title(title, fontsize=12, fontweight='bold',
-                                       pad=-5)
-                    if j==1:
-                        ax_cb = fig.add_axes([0.625,0.15,0.02,.25])
-                        cb = mpl.colorbar.ColorbarBase(ax_cb, cmap=my_cmap, 
+                                 startangle=90, counterclock=False, radius=1.2)
+                    axs[i,j].set_title(title, fontweight='bold')#fontsize=12, ,
+                                       
+                    if j==2:
+                        ax1_divider = make_axes_locatable(axs[i,j])
+                        cax1 = ax1_divider.append_axes("right", size="7%", pad="2%")
+                        cb = mpl.colorbar.ColorbarBase(cax1, cmap=my_cmap, 
                                                        norm=my_norm)
-                        cb.set_label('')
+                        cb.set_label('Correction Coefficients')
+                        cb.outline.set_color('white')
                         
         # show results
         plt.show()
@@ -624,9 +645,9 @@ class CalVal(object):
                     idx = z.argsort()                                                  
                     x2, y2, z = x[idx], y[idx], z[idx]
                     axs[i,j].scatter(x2, y2, c=z, s=1, cmap=cmocean.cm.haline)
-                    axs[i,j].set_xlabel('Boya', fontsize=12, 
+                    axs[i,j].set_xlabel('Buoy', fontsize=12, 
                                         fontweight='bold')
-                    axs[i,j].set_ylabel('Modelo', fontsize=12, 
+                    axs[i,j].set_ylabel('Model', fontsize=12, 
                                         fontweight='bold')
                     axs[i,j].set_title(title, fontsize=12, 
                                        fontweight='bold')
@@ -713,6 +734,5 @@ class CalVal(object):
                     axs[i,j].set_ylim(0, 7.5)
                     
         # show results
-        plt.show()
-        
+        plt.show()        
 
