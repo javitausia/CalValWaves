@@ -492,7 +492,7 @@ class CalVal(object):
         plt.show()
     
     
-    def buoy_comparison(self, comparison_type):
+    def buoy_comparison(self, comparison_type, buoy_name='Buoy NAME'):
         """ Compares data with buoy, even if it's been corrected or not
             ------------
             Parameters
@@ -537,7 +537,7 @@ class CalVal(object):
             fig, axs = plt.subplots(3, 1, figsize=(20,15), sharex=True)
             fig.subplots_adjust(hspace=0.05, wspace=0.1)
             fig.suptitle('Year: ' + str(year) + 
-                         ', Waimea Bay nearshore buoy comparison with ' + 
+                         ', ' + buoy_name + ' buoy comparison with ' + 
                          comparison_type.upper()+ ' CSIRO', 
                          fontsize=24, y=0.94, fontweight='bold')
             months = ['                        Jan', 
@@ -586,7 +586,7 @@ class CalVal(object):
         # show results
         plt.show()
      
-    def buoy_validation(self, validation_type):
+    def buoy_validation(self, validation_type, buoy_name='Buoy NAME'):
         """ Validate data with buoy, even if it's been corrected or not
             ------------
             Parameters
@@ -624,7 +624,7 @@ class CalVal(object):
         fig, axs = plt.subplots(2, 3, figsize=(20,20))
         fig.subplots_adjust(hspace=0.2, wspace=0.2)
         fig.suptitle('Hindcast: CSIRO' + 
-                     ', Waimea Bay nearshore buoy validation \n ' +title, 
+                     ', ' + buoy_name + ' buoy validation \n ' +title, 
                      fontsize=24, y=0.98, fontweight='bold')
         
         for i in range(2):
