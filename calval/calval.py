@@ -1,4 +1,4 @@
-# basic
+# arrays
 import numpy as np
 import pandas as pd
 
@@ -9,13 +9,13 @@ from mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import cmocean
-from pandas.plotting import register_matplotlib_converters
-register_matplotlib_converters()
+# from pandas.plotting import register_matplotlib_converters
+# register_matplotlib_converters()
 
 # additional
 from datetime import timedelta as td
 
-# additional*
+# maths and stats
 import scipy.stats as stats
 from scipy.stats import gaussian_kde
 from sklearn.metrics import mean_squared_error
@@ -26,7 +26,6 @@ import statsmodels.api as sm
 from .functions import rmse, bias, si, create_vec_direc, calibration_time
 
 
-# +
 # Calibration-Validation class
 class CalVal(object):
     """
@@ -35,15 +34,15 @@ class CalVal(object):
         with satellites, so then the data can be compared and validated
         with the buoys. Following this procedure, the calibration is always
         performed and after this, if buoy data is available, then this new
-        wave reanalysis calibrated hindcast can be validated, but is has
-        been already calibrated
+        wave reanalysis calibrated hindcast can be validated
     """
     
     
-    def __init__(self, hindcast, n_parts, satellite, buoy=(False,None),
+    def __init__(self, hindcast, n_parts, 
+                 satellite, buoy=(False,None),
                  buoy_corrections=False,
-                 hindcast_longitude=180.0,
-                 hindcast_latitude=0.0,
+                 hindcast_longitude=-4.5,
+                 hindcast_latitude=44.0,
                  buoy_longitude=None,
                  buoy_latitude=None):
                  
@@ -52,38 +51,39 @@ class CalVal(object):
             ------------
             Parameters
             hindcast: Hindcast data as a dataframe
+            n_parts: Number of partitions in the wave hindcast
             satellite: Satellite data as a netCDF (see extract_satellite.py)
-            buoy: Buoy data as a dataframe. Information regarding the
-                  acquisition of the data could be uploaded soon in Spain
+            buoy: Buoy data as a dataframe, and boolean to indicate if it
+                is available or not
+            buoy_corrections: Boolean to indicate if the buoy corrections
+                will be applied or not
             ------------
             Returns
             Attributes initialized and plots for both calibrations, the one
             done with the satellite and the other one performed with buoy
-            data. The parameters for the calibrations are also stored
+            data, if done. The parameters for the calibrations are also stored
         """
         
         print('\n Plotting region to be working with!! \n')
         
         # plot data domains for hindcast, satellite and buoy
         fig, ax = plt.subplots(figsize=(10,10),subplot_kw={
-            'projection': ccrs.PlateCarree(central_longitude=hindcast_longitude-360)
+            'projection': ccrs.PlateCarree(central_longitude=hindcast_longitude)
         })
         land_10m = cfeature.NaturalEarthFeature(
             'physical', 'land', '10m', edgecolor='face',
             facecolor=cfeature.COLORS['land']
         ) # add land to image
-        ax.scatter(satellite.LONGITUDE,satellite.LATITUDE,s=0.01,c='k',
-                   transform=ccrs.PlateCarree())
+        ax.scatter(satellite.LONGITUDE,satellite.LATITUDE,
+                   s=0.01,c='k',transform=ccrs.PlateCarree())
         ax.scatter(hindcast_longitude,hindcast_latitude,
-                   s=50,c='red',zorder=10,
-                   transform=ccrs.PlateCarree())
+                   s=50,c='red',zorder=10,transform=ccrs.PlateCarree())
         ax.scatter(buoy_longitude,buoy_latitude,
-                   s=50,c='orange',zorder=10,
-                   transform=ccrs.PlateCarree()) \
+                   s=50,c='orange',zorder=10,transform=ccrs.PlateCarree()) \
             if buoy[0] else None
         ax.set_extent(
             [hindcast_longitude-4,hindcast_longitude+4,
-             hindcast_latitude-2,hindcast_latitude+2]
+             hindcast_latitude-4,hindcast_latitude+2]
         )
         ax.stock_img()
         ax.add_feature(land_10m)
@@ -104,7 +104,7 @@ class CalVal(object):
         self.n_parts              =    n_parts
         self.hindcast_longitude   =    hindcast_longitude
         self.hindcast_latitude    =    hindcast_latitude
-        self.possible_to_correct  =    np.where(hindcast['Hs_cal'] > 0.01)[0]        
+        self.possible_to_correct  =    np.where(hindcast['Hs_cal'] > 0.01)[0]
         self.hind_to_corr         =    hindcast.iloc[self.possible_to_correct].copy()
         self.satellite            =    satellite.copy()
         self.hindcast_sat_corr    =    hindcast.copy()
@@ -126,16 +126,16 @@ class CalVal(object):
             parameters that are significantly representative
             ------------
             Parameters
-            calibration_type: (Str) Type of calibration to be done 
-                                  (satellite, buoy)
+            calibration_type: (str) Type of calibration to be done 
+                it can be : (satellite, buoy)
             ------------
             Returns
             Corrected data and calculated params
         """
         
-        print('--------------------------------------------------------')
+        print(' -------------------------------------------------------- ')
         print(calibration_type.upper() + ' CALIBRATION will be performed')
-        print('-------------------------------------------------------- \n ')
+        print(' -------------------------------------------------------- \n ')
         
         # Initializes satellite data to calibrate
         if calibration_type=='satellite':
@@ -228,7 +228,7 @@ class CalVal(object):
                 print('Sea... \n')
                 Hsea    = create_vec_direc(self.hind_to_corr['Hsea'],
                                            self.hind_to_corr['Dirsea'])
-                Hsea_corr_mat  = paramss[:,0:16]  * Hsea**2
+                Hsea_corr_mat  = paramss[:,0:16] * Hsea**2
                 Hsea_corr      = np.sqrt(np.sum(Hsea_corr_mat, axis=1))
                 Hs_ncorr_sea   = Hsea**2
                 index_hsea     = np.where(self.hindcast.columns.values=='Hsea')[0][0]
@@ -245,8 +245,8 @@ class CalVal(object):
                     Hs_ncorr_swell = globals()['Hswell%s' % part]**2
                 else:
                     Hs_ncorr_swell = Hs_ncorr_swell + globals()['Hswell%s' % part]**2
-        print(np.shape(Hs_ncorr_sea))
-        print(np.shape(Hs_ncorr_swell))
+        # print(np.shape(Hs_ncorr_sea))
+        # print(np.shape(Hs_ncorr_swell))
         
         Hs_ncorr_mat = np.concatenate((Hs_ncorr_sea, Hs_ncorr_swell), axis=1)
         Hs_ncorr         = np.sqrt(np.sum(Hs_ncorr_mat, axis=1))
@@ -258,10 +258,8 @@ class CalVal(object):
         if calibration_type=='satellite':
             self.hindcast_sat_corr.iloc[self.possible_to_correct, index_hs] = Hs_corr
             self.hindcast_sat_corr.iloc[self.possible_to_correct, index_hsea] = Hsea_corr
-            
             for part in np.arange(1, self.n_parts):
-                self.hindcast_sat_corr.iloc[self.possible_to_correct, globals()['index_hswell%s' % part]] = globals()['Hswell%s_corr' % part]               
-       
+                self.hindcast_sat_corr.iloc[self.possible_to_correct, globals()['index_hswell%s' % part]] = globals()['Hswell%s_corr' % part]
             self.hindcast_sat_corr.iloc[self.possible_to_correct, index_hs_cal] = Hs_corr
         
         else:
@@ -273,7 +271,7 @@ class CalVal(object):
         print(' \n  \n ')
         
         # return
-        return(params)
+        return (params)
     
     
     def satellite_values(self, ini_lat, end_lat, ini_lon, end_lon):
@@ -342,6 +340,7 @@ class CalVal(object):
         print('Length of data to calibrate: ' + str(len(calibration)) + ' \n ')
         
         return wave_height_cal, calibration
+
     
     def density_scatter(self, x, y):
         xy = np.vstack([x, y])
